@@ -55,7 +55,7 @@ def make_settings_keyboard_for_user(user_id):
 def cmd_start(message):
     bot.send_message(message.chat.id, texts.text_start, parse_mode="HTML")
     if config.botan_id:
-        botan.track(config.botan_id, message.chat.id, message, 'Start')
+        botan.track(config.botan_api_key, message.chat.id, message, 'Start')
     return
 
 
@@ -63,7 +63,7 @@ def cmd_start(message):
 def cmd_help(message):
     bot.send_message(message.chat.id, texts.text_help, parse_mode="HTML")
     if config.botan_id:
-        botan.track(config.botan_id, message.chat.id, message, 'Help')
+        botan.track(config.botan_api_key, message.chat.id, message, 'Help')
     return
 
 
@@ -72,7 +72,7 @@ def cmd_settings(message):
     bot.send_message(message.chat.id, text=dbworker.get_settings_text(message.chat.id),
                      reply_markup=make_settings_keyboard_for_user(message.chat.id), parse_mode="Markdown")
     if config.botan_id:
-        botan.track(config.botan_id, message.chat.id, message, 'Settings')
+        botan.track(config.botan_api_key, message.chat.id, message, 'Settings')
     return
 
 
@@ -146,7 +146,7 @@ def generate_custom(message):
 
     bot.send_message(message.chat.id, password)
     if config.botan_id:
-        botan.track(config.botan_id, message.chat.id, message, 'Custom password')
+        botan.track(config.botan_api_key, message.chat.id, message, 'Custom password')
     return
 
 
@@ -154,7 +154,7 @@ def generate_custom(message):
 def cmd_generate_weak_password(message):
     bot.send_message(message.chat.id, generate_weak_pwd())
     if config.botan_id:
-        botan.track(config.botan_id, message.chat.id, message, 'Weak password')
+        botan.track(config.botan_api_key, message.chat.id, message, 'Weak password')
     return
 
 
@@ -162,7 +162,7 @@ def cmd_generate_weak_password(message):
 def cmd_generate_normal_password(message):
     bot.send_message(message.chat.id, text=generate_normal_pwd())
     if config.botan_id:
-        botan.track(config.botan_id, message.chat.id, message, 'Normal password')
+        botan.track(config.botan_api_key, message.chat.id, message, 'Normal password')
     return
 
 
@@ -170,7 +170,7 @@ def cmd_generate_normal_password(message):
 def generate_normal_password(message):
     bot.send_message(message.chat.id, text=generate_strong_pwd())
     if config.botan_id:
-        botan.track(config.botan_id, message.chat.id, message, 'Strong password')
+        botan.track(config.botan_api_key, message.chat.id, message, 'Strong password')
     return
 
 
@@ -178,7 +178,7 @@ def generate_normal_password(message):
 def cmd_generate_normal_password(message):
     bot.send_message(message.chat.id, text=generate_stronger_pwd())
     if config.botan_id:
-        botan.track(config.botan_id, message.chat.id, message, 'Stronger password')
+        botan.track(config.botan_api_key, message.chat.id, message, 'Stronger password')
     return
 
 
@@ -186,7 +186,7 @@ def cmd_generate_normal_password(message):
 def cmd_generate_normal_password(message):
     bot.send_message(message.chat.id, text=generate_insane_pwd())
     if config.botan_id:
-        botan.track(config.botan_id, message.chat.id, message, 'Insane password')
+        botan.track(config.botan_api_key, message.chat.id, message, 'Insane password')
     return
 
 
@@ -194,7 +194,7 @@ def cmd_generate_normal_password(message):
 def default(message):
     bot.send_message(message.chat.id, text=generate_strong_pwd())
     if config.botan_id:
-        botan.track(config.botan_id, message.chat.id, message, 'Strong password (by rand message)')
+        botan.track(config.botan_api_key, message.chat.id, message, 'Strong password (by rand message)')
     return
 
 
@@ -283,7 +283,7 @@ def inline(query):
     ]
     bot.answer_inline_query(inline_query_id=query.id, results=results, cache_time=1, is_personal=True)
     if config.botan_id:
-        botan.track(config.botan_id, -1, {}, 'Inline Mode')
+        botan.track(config.botan_api_key, -1, {}, 'Inline Mode')
     return
 
 
@@ -307,4 +307,3 @@ if __name__ == '__main__':
 
     # You may want to use webhooks here...
     bot.polling(none_stop=True)
-
