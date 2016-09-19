@@ -41,8 +41,14 @@ def make_settings_keyboard_for_user(user_id):
         kb.add(types.InlineKeyboardButton(text="Remove separators", callback_data="disable_separators"))
     else:
         kb.add(types.InlineKeyboardButton(text="Add separators", callback_data="enable_separators"))
-
     return kb
+
+
+def make_regenerate_keyboard():
+    keyboard = types.InlineKeyboardMarkup()
+    btn = types.InlineKeyboardButton(text="🔄 Regenerate", callback_data="regenerate")
+    keyboard.add(btn)
+    return keyboard
 
 
 # In case you have HUGE problems, uncomment these lines and let bot to skip all "bad" messages
@@ -126,9 +132,8 @@ def generate_insane_pwd():
                 separator=random.choice(".$*;_=:|~?!%-+"))
 
 
-@bot.message_handler(commands=["generate"])
-def generate_custom(message):
-    user = dbworker.get_person(message.chat.id)
+def generate_custom(user):
+    user = dbworker.get_person(user)
     words = [str.upper(word) if throw_random() else word for word in xp.generate_xkcdpassword(
         wordlist=wordlist, numwords=user["word_count"], delimiter=" ").split()
              ]
@@ -143,8 +148,13 @@ def generate_custom(message):
         )
     else:
         password = _pwd
+    return password
 
-    bot.send_message(message.chat.id, password)
+
+@bot.message_handler(commands=["generate"])
+def cmd_generate_custom(message):
+    bot.send_message(chat_id=message.chat.id, text=generate_custom(message.chat.id),
+                     reply_markup=make_regenerate_keyboard())
     if config.botan_id:
         botan.track(config.botan_api_key, message.chat.id, message, 'Custom password')
     return
@@ -198,6 +208,14 @@ def default(message):
     return
 
 
+@bot.callback_query_handler(func=lambda call: call.data == "regenerate")
+def regenerate(call):
+    bot.edit_message_text(text=generate_custom(call.from_user.id), chat_id=call.from_user.id,
+                          message_id=call.message.message_id, reply_markup=make_regenerate_keyboard())
+    if config.botan_id:
+        botan.track(config.botan_api_key, call.message.chat.id, None, 'Custom password')
+
+
 @bot.callback_query_handler(func=lambda call: True)
 def handle_callbacks(call):
     if call.data == "disable_prefixes":
@@ -213,9 +231,8 @@ def handle_callbacks(call):
     if call.data == "plus_word":
         dbworker.change_word_count(call.from_user.id, increase=True)
     bot.edit_message_text(text=dbworker.get_settings_text(call.from_user.id), chat_id=call.from_user.id,
-                          message_id=call.message.message_id, parse_mode="Markdown")
-    bot.edit_message_reply_markup(chat_id=call.from_user.id, message_id=call.message.message_id,
-                                  reply_markup=make_settings_keyboard_for_user(call.from_user.id))
+                          message_id=call.message.message_id, parse_mode="Markdown",
+                          reply_markup=make_settings_keyboard_for_user(call.from_user.id))
 
 
 @bot.inline_handler(lambda query: True)
