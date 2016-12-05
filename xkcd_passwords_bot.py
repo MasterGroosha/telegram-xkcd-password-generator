@@ -212,6 +212,7 @@ def default(message):
 def regenerate(call):
     bot.edit_message_text(text=generate_custom(call.from_user.id), chat_id=call.from_user.id,
                           message_id=call.message.message_id, reply_markup=make_regenerate_keyboard())
+    bot.answer_callback_query(callback_query_id=call.id)
     if config.botan_id:
         botan.track(config.botan_api_key, call.message.chat.id, None, 'Custom password')
 
@@ -233,6 +234,7 @@ def handle_callbacks(call):
     bot.edit_message_text(text=dbworker.get_settings_text(call.from_user.id), chat_id=call.from_user.id,
                           message_id=call.message.message_id, parse_mode="Markdown",
                           reply_markup=make_settings_keyboard_for_user(call.from_user.id))
+    bot.answer_callback_query(callback_query_id=call.id)
 
 
 @bot.inline_handler(lambda query: True)
