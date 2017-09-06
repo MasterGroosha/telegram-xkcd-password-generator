@@ -8,14 +8,15 @@ import config
 import cherrypy
 from xkcdpass import xkcd_password as xp
 import random
-import texts
 import dbworker
 import botan
+from utils import get_language
+from texts import strings
 
 bot = telebot.TeleBot(config.token)
 
 
-def make_settings_keyboard_for_user(user_id):
+def make_settings_keyboard_for_user(user_id, lang_code):
     """
     Prepare keyboard for user based on his settings
 
@@ -27,26 +28,26 @@ def make_settings_keyboard_for_user(user_id):
 
     wrds_lst = []
     if user["word_count"] >= (config.length_min + 1):
-        wrds_lst.append(types.InlineKeyboardButton(text="– word", callback_data="minus_word"))
+        wrds_lst.append(types.InlineKeyboardButton(text=strings.get(get_language(lang_code)).get("minusword"), callback_data="minus_word"))
     if user["word_count"] <= (config.length_max - 1):
-        wrds_lst.append(types.InlineKeyboardButton(text="+ word", callback_data="plus_word"))
+        wrds_lst.append(types.InlineKeyboardButton(text=strings.get(get_language(lang_code)).get("plusword"), callback_data="plus_word"))
     kb.add(*wrds_lst)
 
     if user["prefixes"]:
-        kb.add(types.InlineKeyboardButton(text="Remove prefixes", callback_data="disable_prefixes"))
+        kb.add(types.InlineKeyboardButton(text=strings.get(get_language(lang_code)).get("minuspref"), callback_data="disable_prefixes"))
     else:
-        kb.add(types.InlineKeyboardButton(text="Add prefixes", callback_data="enable_prefixes"))
+        kb.add(types.InlineKeyboardButton(text=strings.get(get_language(lang_code)).get("pluspref"), callback_data="enable_prefixes"))
 
     if user["separators"]:
-        kb.add(types.InlineKeyboardButton(text="Remove separators", callback_data="disable_separators"))
+        kb.add(types.InlineKeyboardButton(text=strings.get(get_language(lang_code)).get("minussep"), callback_data="disable_separators"))
     else:
-        kb.add(types.InlineKeyboardButton(text="Add separators", callback_data="enable_separators"))
+        kb.add(types.InlineKeyboardButton(text=strings.get(get_language(lang_code)).get("plussep"), callback_data="enable_separators"))
     return kb
 
 
-def make_regenerate_keyboard():
+def make_regenerate_keyboard(lang_code):
     keyboard = types.InlineKeyboardMarkup()
-    btn = types.InlineKeyboardButton(text="🔄 Regenerate", callback_data="regenerate")
+    btn = types.InlineKeyboardButton(text=strings.get(get_language(lang_code)).get("regenerate"), callback_data="regenerate")
     keyboard.add(btn)
     return keyboard
 
@@ -59,7 +60,7 @@ def make_regenerate_keyboard():
 
 @bot.message_handler(commands=["start"])
 def cmd_start(message):
-    bot.send_message(message.chat.id, texts.text_start, parse_mode="HTML")
+    bot.send_message(message.chat.id, strings.get(get_language(message.from_user.language_code)).get("start"), parse_mode="HTML")
     if config.botan_id:
         botan.track(config.botan_api_key, message.chat.id, message, 'Start')
     return
@@ -67,7 +68,7 @@ def cmd_start(message):
 
 @bot.message_handler(commands=["help"])
 def cmd_help(message):
-    bot.send_message(message.chat.id, texts.text_help, parse_mode="HTML")
+    bot.send_message(message.chat.id, strings.get(get_language(message.from_user.language_code)).get("help"), parse_mode="HTML")
     if config.botan_id:
         botan.track(config.botan_api_key, message.chat.id, message, 'Help')
     return
@@ -75,8 +76,8 @@ def cmd_help(message):
 
 @bot.message_handler(commands=["settings"])
 def cmd_settings(message):
-    bot.send_message(message.chat.id, text=dbworker.get_settings_text(message.chat.id),
-                     reply_markup=make_settings_keyboard_for_user(message.chat.id), parse_mode="Markdown")
+    bot.send_message(message.chat.id, text=dbworker.get_settings_text(message.chat.id, message.from_user.language_code),
+                     reply_markup=make_settings_keyboard_for_user(message.chat.id, message.from_user.language_code), parse_mode="Markdown")
     if config.botan_id:
         botan.track(config.botan_api_key, message.chat.id, message, 'Settings')
     return
@@ -154,7 +155,7 @@ def generate_custom(user):
 @bot.message_handler(commands=["generate"])
 def cmd_generate_custom(message):
     bot.send_message(chat_id=message.chat.id, text=generate_custom(message.chat.id),
-                     reply_markup=make_regenerate_keyboard())
+                     reply_markup=make_regenerate_keyboard(message.from_user.language_code))
     if config.botan_id:
         botan.track(config.botan_api_key, message.chat.id, message, 'Custom password')
     return
@@ -211,7 +212,7 @@ def default(message):
 @bot.callback_query_handler(func=lambda call: call.data == "regenerate")
 def regenerate(call):
     bot.edit_message_text(text=generate_custom(call.from_user.id), chat_id=call.from_user.id,
-                          message_id=call.message.message_id, reply_markup=make_regenerate_keyboard())
+                          message_id=call.message.message_id, reply_markup=make_regenerate_keyboard(call.from_user.language_code))
     bot.answer_callback_query(callback_query_id=call.id)
     if config.botan_id:
         botan.track(config.botan_api_key, call.message.chat.id, None, 'Custom password')
@@ -231,9 +232,9 @@ def handle_callbacks(call):
         dbworker.change_word_count(call.from_user.id, increase=False)
     if call.data == "plus_word":
         dbworker.change_word_count(call.from_user.id, increase=True)
-    bot.edit_message_text(text=dbworker.get_settings_text(call.from_user.id), chat_id=call.from_user.id,
+    bot.edit_message_text(text=dbworker.get_settings_text(call.from_user.id, call.from_user.language_code), chat_id=call.from_user.id,
                           message_id=call.message.message_id, parse_mode="Markdown",
-                          reply_markup=make_settings_keyboard_for_user(call.from_user.id))
+                          reply_markup=make_settings_keyboard_for_user(call.from_user.id, call.from_user.language_code))
     bot.answer_callback_query(callback_query_id=call.id)
 
 
@@ -247,7 +248,7 @@ def inline(query):
             input_message_content=types.InputTextMessageContent(
                 message_text=generate_insane_pwd()
             ),
-            thumb_url="https://raw.githubusercontent.com/Kondra007/telegram-xkcd-password-generator/master/img/pwd_green.png",
+            thumb_url="https://raw.githubusercontent.com/MasterGroosha/telegram-xkcd-password-generator/master/img/pwd_green.png",
             thumb_height=64,
             thumb_width=64,
         ),
@@ -259,7 +260,7 @@ def inline(query):
             input_message_content=types.InputTextMessageContent(
                 message_text=generate_stronger_pwd()
             ),
-            thumb_url="https://raw.githubusercontent.com/Kondra007/telegram-xkcd-password-generator/master/img/pwd_green.png",
+            thumb_url="https://raw.githubusercontent.com/MasterGroosha/telegram-xkcd-password-generator/master/img/pwd_green.png",
             thumb_height=64,
             thumb_width=64,
         ),
@@ -271,7 +272,7 @@ def inline(query):
             input_message_content=types.InputTextMessageContent(
                 message_text=generate_strong_pwd()
             ),
-            thumb_url="https://raw.githubusercontent.com/Kondra007/telegram-xkcd-password-generator/master/img/pwd_yellow.png",
+            thumb_url="https://raw.githubusercontent.com/MasterGroosha/telegram-xkcd-password-generator/master/img/pwd_yellow.png",
             thumb_height=64,
             thumb_width=64,
         ),
@@ -283,7 +284,7 @@ def inline(query):
             input_message_content=types.InputTextMessageContent(
                 message_text=generate_normal_pwd()
             ),
-            thumb_url="https://raw.githubusercontent.com/Kondra007/telegram-xkcd-password-generator/master/img/pwd_yellow.png",
+            thumb_url="https://raw.githubusercontent.com/MasterGroosha/telegram-xkcd-password-generator/master/img/pwd_yellow.png",
             thumb_height=64,
             thumb_width=64,
         ),
@@ -295,7 +296,7 @@ def inline(query):
             input_message_content=types.InputTextMessageContent(
                 message_text=generate_weak_pwd()
             ),
-            thumb_url="https://raw.githubusercontent.com/Kondra007/telegram-xkcd-password-generator/master/img/pwd_red.png",
+            thumb_url="https://raw.githubusercontent.com/MasterGroosha/telegram-xkcd-password-generator/master/img/pwd_red.png",
             thumb_height=64,
             thumb_width=64,
         )

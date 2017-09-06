@@ -1,13 +1,16 @@
 # <p align="center">  Readable Passwords Generator for Telegram #
 
 This bot allows you to generate readable passwords directly from Telegram without necessity to open external utilities such as KeePass. An inspiration for this bot came from famous [XKCD 936](http://xkcd.com/936/) strip.  
-Try it now: https://telegram.me/passgenbot
+Try it now: https://t.me/passgenbot
 
 ### Features 
 * Presets of different complexity
 * Ability to generate customized password  
 * Inline mode with colored complexity
 * No personal data is collected!  
+* Basic multilanguage support (En+Ru), depending on `language_code` from Bot API
+
+Don't forget to rename `config.example.py` to `config.py` and put your data instead of stubs.
 
 ### Used modules
 * [pyTelegramBotAPI](https://github.com/eternnoir/pyTelegramBotAPI) – Awesome Telegram API wrapper
@@ -47,5 +50,4 @@ I'm using [Botan](http://botan.io/) in my bot to collect anonymous stats for mos
 
 
 ### My other projects
-* [Telegram-RSS-Generation](https://github.com/Kondra007/telegram-rss-generation) – A concept for creating an RSS feed for your own channel
-* [Telegram Proxy Bot](https://bitbucket.org/master_groosha/telegram-proxy-bot) – A "virtual" bot account for chatting with other people without telling your real username (one bot for one person)   
+* [Telegram Proxy Bot](https://bitbucket.org/mastergroosha/telegram-proxy-bot) – A "virtual" bot account for chatting with other people without telling your real username (one bot for one person)   
