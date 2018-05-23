@@ -25,7 +25,7 @@ def get_settings_text(user_id, lang_code):
 
 
 def user_exists(user_id):
-    return True if len(db.search(Query().user_id == user_id)) > 0 else False
+    return bool(db.search(Query().user_id == user_id))
 
 
 def get_person(user_id):
