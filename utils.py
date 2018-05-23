@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
+from collections import defaultdict
 
 
 def get_language(lang_code):
-    return lang_code.split("-")[0] if lang_code else 'en'
+    langs = defaultdict(lambda: 'en', {'ru': 'ru'})
+    return langs[lang_code.split("-")[0]] if lang_code else 'en'
