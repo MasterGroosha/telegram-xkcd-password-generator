@@ -16,7 +16,6 @@ Don't forget to rename `config.example.py` to `config.py` and put your data inst
 * [pyTelegramBotAPI](https://github.com/eternnoir/pyTelegramBotAPI) – Awesome Telegram API wrapper
 * [TinyDB](https://github.com/msiemens/tinydb) – Simple and pretty fast document-oriented DB
 * [XKCD-password-generator](https://github.com/redacted/XKCD-password-generator) – It goes without saying :)
-* [Botan](https://github.com/botanio/sdk) – Yandex.Appmetrica bot analytics
 * [CherryPy](https://github.com/cherrypy/cherrypy) – Web-Server for using with Webhooks  
 
 ### Presets
@@ -39,14 +38,6 @@ With `/settings` command you can customize generated passwords. Currently suppor
 ![Inline mode](https://pp.vk.me/c636824/v636824512/1959c/Y3f8VXAWOdw.jpg)
 
 You can also use this bot in inline mode. An indicator on the left shows rough password complexity (green is good, red is not).
-
-
-### Botan analytics
-
-I'm using [Botan](http://botan.io/) in my bot to collect anonymous stats for most used commands. Here you can see screenshot of Botan's web interface. Notice I'm using stubs to get rid of user ID's or other user-specific data.  
-
-![Botan web interface](https://pp.vk.me/c636824/v636824512/195a5/QwSq4wC3KiU.jpg)
-
 
 
 ### My other projects

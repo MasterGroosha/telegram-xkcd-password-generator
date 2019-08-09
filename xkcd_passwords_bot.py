@@ -9,7 +9,6 @@ import cherrypy
 from xkcdpass import xkcd_password as xp
 import random
 import dbworker
-import botan
 from utils import get_language
 from texts import strings
 
@@ -61,26 +60,17 @@ def make_regenerate_keyboard(lang_code):
 @bot.message_handler(commands=["start"])
 def cmd_start(message):
     bot.send_message(message.chat.id, strings.get(get_language(message.from_user.language_code)).get("start"), parse_mode="HTML")
-    if config.botan_id:
-        botan.track(config.botan_api_key, message.chat.id, message, 'Start')
-    return
 
 
 @bot.message_handler(commands=["help"])
 def cmd_help(message):
     bot.send_message(message.chat.id, strings.get(get_language(message.from_user.language_code)).get("help"), parse_mode="HTML")
-    if config.botan_id:
-        botan.track(config.botan_api_key, message.chat.id, message, 'Help')
-    return
 
 
 @bot.message_handler(commands=["settings"])
 def cmd_settings(message):
     bot.send_message(message.chat.id, text=dbworker.get_settings_text(message.chat.id, message.from_user.language_code),
                      reply_markup=make_settings_keyboard_for_user(message.chat.id, message.from_user.language_code), parse_mode="Markdown")
-    if config.botan_id:
-        botan.track(config.botan_api_key, message.chat.id, message, 'Settings')
-    return
 
 
 # Used to decide whether to capitalize the whole world or not
@@ -156,57 +146,37 @@ def generate_custom(user):
 def cmd_generate_custom(message):
     bot.send_message(chat_id=message.chat.id, text=generate_custom(message.chat.id),
                      reply_markup=make_regenerate_keyboard(message.from_user.language_code))
-    if config.botan_id:
-        botan.track(config.botan_api_key, message.chat.id, message, 'Custom password')
-    return
 
 
 @bot.message_handler(commands=["generate_weak"])
 def cmd_generate_weak_password(message):
     bot.send_message(message.chat.id, generate_weak_pwd())
-    if config.botan_id:
-        botan.track(config.botan_api_key, message.chat.id, message, 'Weak password')
-    return
 
 
 @bot.message_handler(commands=["generate_normal"])
 def cmd_generate_normal_password(message):
     bot.send_message(message.chat.id, text=generate_normal_pwd())
-    if config.botan_id:
-        botan.track(config.botan_api_key, message.chat.id, message, 'Normal password')
-    return
 
 
 @bot.message_handler(commands=["generate_strong"])
 def generate_normal_password(message):
     bot.send_message(message.chat.id, text=generate_strong_pwd())
-    if config.botan_id:
-        botan.track(config.botan_api_key, message.chat.id, message, 'Strong password')
     return
 
 
 @bot.message_handler(commands=["generate_stronger"])
 def cmd_generate_normal_password(message):
     bot.send_message(message.chat.id, text=generate_stronger_pwd())
-    if config.botan_id:
-        botan.track(config.botan_api_key, message.chat.id, message, 'Stronger password')
-    return
 
 
 @bot.message_handler(commands=["generate_insane"])
 def cmd_generate_normal_password(message):
     bot.send_message(message.chat.id, text=generate_insane_pwd())
-    if config.botan_id:
-        botan.track(config.botan_api_key, message.chat.id, message, 'Insane password')
-    return
 
 
 @bot.message_handler(func=lambda message: True)
 def default(message):
     bot.send_message(message.chat.id, text=generate_strong_pwd())
-    if config.botan_id:
-        botan.track(config.botan_api_key, message.chat.id, message, 'Strong password (by rand message)')
-    return
 
 
 @bot.callback_query_handler(func=lambda call: call.data == "regenerate")
@@ -214,8 +184,6 @@ def regenerate(call):
     bot.edit_message_text(text=generate_custom(call.from_user.id), chat_id=call.from_user.id,
                           message_id=call.message.message_id, reply_markup=make_regenerate_keyboard(call.from_user.language_code))
     bot.answer_callback_query(callback_query_id=call.id)
-    if config.botan_id:
-        botan.track(config.botan_api_key, call.message.chat.id, None, 'Custom password')
 
 
 @bot.callback_query_handler(func=lambda call: True)
@@ -302,9 +270,6 @@ def inline(query):
         )
     ]
     bot.answer_inline_query(inline_query_id=query.id, results=results, cache_time=1, is_personal=True)
-    if config.botan_id:
-        botan.track(config.botan_api_key, -1, {}, 'Inline Mode')
-    return
 
 
 class WebhookServer(object):
