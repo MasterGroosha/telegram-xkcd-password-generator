@@ -144,44 +144,43 @@ def generate_custom(user):
 
 @bot.message_handler(commands=["generate"])
 def cmd_generate_custom(message):
-    bot.send_message(chat_id=message.chat.id, text=generate_custom(message.chat.id),
+    bot.send_message(chat_id=message.chat.id, text="<code>{}</code>".format(generate_custom(message.chat.id)), parse_mode="HTML",
                      reply_markup=make_regenerate_keyboard(message.from_user.language_code))
 
 
 @bot.message_handler(commands=["generate_weak"])
 def cmd_generate_weak_password(message):
-    bot.send_message(message.chat.id, generate_weak_pwd())
+    bot.send_message(message.chat.id, text="<code>{}</code>".format(generate_weak_pwd()), parse_mode="HTML")
 
 
 @bot.message_handler(commands=["generate_normal"])
 def cmd_generate_normal_password(message):
-    bot.send_message(message.chat.id, text=generate_normal_pwd())
+    bot.send_message(message.chat.id, text="<code>{}</code>".format(generate_normal_pwd()), parse_mode="HTML")
 
 
 @bot.message_handler(commands=["generate_strong"])
 def generate_normal_password(message):
-    bot.send_message(message.chat.id, text=generate_strong_pwd())
-    return
+    bot.send_message(message.chat.id, text="<code>{}</code>".format(generate_strong_pwd()), parse_mode="HTML")
 
 
 @bot.message_handler(commands=["generate_stronger"])
 def cmd_generate_normal_password(message):
-    bot.send_message(message.chat.id, text=generate_stronger_pwd())
+    bot.send_message(message.chat.id, text="<code>{}</code>".format(generate_stronger_pwd()), parse_mode="HTML")
 
 
 @bot.message_handler(commands=["generate_insane"])
 def cmd_generate_normal_password(message):
-    bot.send_message(message.chat.id, text=generate_insane_pwd())
+    bot.send_message(message.chat.id, text="<code>{}</code>".format(generate_insane_pwd()), parse_mode="HTML")
 
 
 @bot.message_handler(func=lambda message: True)
 def default(message):
-    bot.send_message(message.chat.id, text=generate_strong_pwd())
+    bot.send_message(message.chat.id, text="<code>{}</code>".format(generate_strong_pwd()), parse_mode="HTML")
 
 
 @bot.callback_query_handler(func=lambda call: call.data == "regenerate")
 def regenerate(call):
-    bot.edit_message_text(text=generate_custom(call.from_user.id), chat_id=call.from_user.id,
+    bot.edit_message_text(text="<code>{}</code>".format(generate_custom(call.from_user.id)), chat_id=call.from_user.id, parse_mode="HTML",
                           message_id=call.message.message_id, reply_markup=make_regenerate_keyboard(call.from_user.language_code))
     bot.answer_callback_query(callback_query_id=call.id)
 
@@ -214,7 +213,8 @@ def inline(query):
             title="Insane password",
             description="2 prefixes, 2 suffixes, 3 words, separated by the same (random) symbol",
             input_message_content=types.InputTextMessageContent(
-                message_text=generate_insane_pwd()
+                message_text="<code>{}</code>".format(generate_insane_pwd()),
+                parse_mode="HTML"
             ),
             thumb_url="https://raw.githubusercontent.com/MasterGroosha/telegram-xkcd-password-generator/master/img/pwd_green.png",
             thumb_height=64,
@@ -226,7 +226,8 @@ def inline(query):
             title="Very strong password",
             description="4 words, random uppercase, separated by numbers",
             input_message_content=types.InputTextMessageContent(
-                message_text=generate_stronger_pwd()
+                message_text="<code>{}</code>".format(generate_stronger_pwd()),
+                parse_mode="HTML"
             ),
             thumb_url="https://raw.githubusercontent.com/MasterGroosha/telegram-xkcd-password-generator/master/img/pwd_green.png",
             thumb_height=64,
@@ -238,7 +239,8 @@ def inline(query):
             title="Strong password",
             description="3 words, random uppercase, separated by numbers",
             input_message_content=types.InputTextMessageContent(
-                message_text=generate_strong_pwd()
+                message_text="<code>{}</code>".format(generate_strong_pwd()),
+                parse_mode="HTML"
             ),
             thumb_url="https://raw.githubusercontent.com/MasterGroosha/telegram-xkcd-password-generator/master/img/pwd_yellow.png",
             thumb_height=64,
@@ -250,7 +252,8 @@ def inline(query):
             title="Normal password",
             description="3 words, second one is uppercase",
             input_message_content=types.InputTextMessageContent(
-                message_text=generate_normal_pwd()
+                message_text="<code>{}</code>".format(generate_normal_pwd()),
+                parse_mode="HTML"
             ),
             thumb_url="https://raw.githubusercontent.com/MasterGroosha/telegram-xkcd-password-generator/master/img/pwd_yellow.png",
             thumb_height=64,
@@ -262,7 +265,8 @@ def inline(query):
             title="Weak password",
             description="2 words, no digits",
             input_message_content=types.InputTextMessageContent(
-                message_text=generate_weak_pwd()
+                message_text="<code>{}</code>".format(generate_weak_pwd()),
+                parse_mode="HTML"
             ),
             thumb_url="https://raw.githubusercontent.com/MasterGroosha/telegram-xkcd-password-generator/master/img/pwd_red.png",
             thumb_height=64,
