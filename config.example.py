@@ -12,8 +12,3 @@ words_file = "wrds.txt"
 # Minimum/maximum allowed words in password
 length_min = 2
 length_max = 8
-
-# This are values for Botan AppMetrica (https://github.com/botanio/sdk)
-# If you don't need it, leave values to None
-botan_id = None
-botan_api_key = None
