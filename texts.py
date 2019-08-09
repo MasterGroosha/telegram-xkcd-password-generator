@@ -14,8 +14,6 @@ en_text_help = "<a href=\"http://imgs.xkcd.com/comics/password_strength.png\">&#
     "/generate_insane – 4 words, second one CAPITALIZED, separators, prefixes and suffixes\n\n"\
     "By the way, this bot has its source code open: "\
     "<a href=\"https://github.com/MasterGroosha/telegram-xkcd-password-generator\">(Github)</a>\n" \
-    "<b>Please note:</b> it uses <a href=\"http://botan.io/\">Botan</a> (Yandex Appmetrica) module to " \
-    "track which presets are used most often. No generated passwords are saved anywhere!\n" \
     "If you still have some questions, feel free to contact me via my bot: @msg_proxy_bot (please, don't use " \
     "it for spam)"
 
@@ -23,8 +21,7 @@ en_text_start = "<a href=\"http://imgs.xkcd.com/comics/password_strength.png\">&
     "You can use this bot to generate <a href=\"http://xkcd.com/936/\">readable passwords</a>.\n" \
     "Press \"[ / ]\" to choose from presets of different strength or use /generate command to send " \
     "custom password (configurable in /settings)\n\n"\
-    "If you would like to see the source code or get help, simply press /help.\n" \
-    "Feel free to rate this bot on <a href=\"https://storebot.me/bot/passgenbot\">Storebot</a>"
+    "If you would like to see the source code or get help, simply press /help.\n"
 
 en_text_settings_choose = "Here are your current settings:\n" \
     "*Number of words*: {num_of_words!s}\n" \
@@ -47,9 +44,6 @@ ru_text_help = "<a href=\"http://imgs.xkcd.com/comics/password_strength.png\">&#
     "/generate_insane – 4 слова, второе ПРОПИСНЫМИ буквами, есть разделители, префиксы и суффиксы\n\n"\
     "Между прочим, исходный код бота открыт: "\
     "<a href=\"https://github.com/MasterGroosha/telegram-xkcd-password-generator\">(Github)</a>\n" \
-    "<b>Внимание:</b> в боте используется модуль <a href=\"http://botan.io/\">Botan</a> (Яндекс.Appmetrica) для " \
-    "отслеживания наиболее часто используемых шаблонов и команд. Никакие пароли не передаются третьим лицам и " \
-    "нигде не сохраняются, кроме как в вашей истории переписки с ботом\n" \
     "Если у вас остались какие-либо вопросы, можете задать их через бота @msg_proxy_bot (пожалуйста, " \
     "не спамьте!)"
 
@@ -57,8 +51,7 @@ ru_text_start = "<a href=\"http://imgs.xkcd.com/comics/password_strength.png\">&
     "Вы можете использовать этого бота для генерации безопасных <a href=\"http://xkcd.com/936/\">читабельных паролей</a>.\n" \
     "Нажмите \"[ / ]\" для создания пароля по одному из готовых шаблонов разной степени сложности или отправьте" \
     "/generate для создания произвольного пароля (сложность настраивается в настройках: /settings)\n\n" \
-    "Если вам интересны исходники бота или есть какие-то вопросы, отправьте /help.\n" \
-    "Вы также можете оценить бота на сайте <a href=\"https://storebot.me/bot/passgenbot\">Storebot</a>"
+    "Если вам интересны исходники бота или есть какие-то вопросы, отправьте /help.\n"
 
 ru_text_settings_choose = "Ваши настройки:\n" \
     "*Количество слов*: {num_of_words!s}\n" \
