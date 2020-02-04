@@ -19,7 +19,7 @@ Don't forget to rename `config.example.py` to `config.py` and put your data inst
 * [XKCD-password-generator](https://github.com/redacted/XKCD-password-generator) – It goes without saying :)
 
 ### Presets
- ![Presets](https://pp.vk.me/c636824/v636824512/19583/hJgaGSvCn8c.jpg)
+ ![Presets](img/readme_presets.png)
 
 `/generate_weak` – 2 words, no separators between words  
 `/generate_normal` – 3 words, no separators between words, second word is CAPITALIZED  
@@ -29,12 +29,12 @@ Don't forget to rename `config.example.py` to `config.py` and put your data inst
 
 ### Customized Passwords
 
-![Customized Passwords](https://pp.vk.me/c636824/v636824512/1958b/6X8h64GqpaA.jpg)  
+![Customized Passwords](img/readme_settings.png)  
 
 With `/settings` command you can customize generated passwords. Currently supported settings are number of words (2 to 8), prefixes and suffices in the beginning and in the end of password and separators between words in password. Then just use `/generate` command to create password based on your settings.
 
 ### Inline mode
 
-![Inline mode](https://pp.vk.me/c636824/v636824512/1959c/Y3f8VXAWOdw.jpg)
+![Inline mode](img/readme_inline.png)
 
 You can also use this bot in inline mode. An indicator on the left shows rough password complexity (green is good, red is not).
