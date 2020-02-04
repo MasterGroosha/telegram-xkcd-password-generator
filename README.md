@@ -8,15 +8,17 @@ Try it now: https://t.me/passgenbot
 * Ability to generate customized password  
 * Inline mode with colored complexity
 * No personal data is collected!  
-* Basic multilanguage support (En+Ru), depending on `language_code` from Bot API  
-* Compatible with Python 3.7+
+* Basic multilanguage support (En+Ru), depending on `language_code` from Bot API
 
 Don't forget to rename `config.example.py` to `config.py` and put your data instead of stubs.
 
-### Used modules
-* [aiogram](https://github.com/aiogram/aiogram) – Awesome Telegram Bot API framework
-* [TinyDB](https://github.com/msiemens/tinydb) – Simple and pretty fast document-oriented DB
+### Requirements
+* Python 3.7+  
+* [aiogram](https://github.com/aiogram/aiogram) – Awesome Telegram Bot API framework  
+* [TinyDB](https://github.com/msiemens/tinydb) – Simple and pretty fast document-oriented DB  
 * [XKCD-password-generator](https://github.com/redacted/XKCD-password-generator) – It goes without saying :)
+
+You can install all these requirements with `pip install -r requirements.txt` command.
 
 ### Presets
  ![Presets](img/readme_presets.png)
