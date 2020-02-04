@@ -53,23 +53,23 @@ def make_regenerate_keyboard(lang_code):
 
 
 # In case you have HUGE problems, uncomment these lines and let bot to skip all "bad" messages
-# @dp.message_handler(lambda message: True)
-# async def skip(message):
+# @dp.message_handler()
+# async def skip(message: types.Message):
 #     return
 
 
 @dp.message_handler(commands=["start"])
-async def cmd_start(message):
+async def cmd_start(message: types.Message):
     await message.answer(strings.get(get_language(message.from_user.language_code)).get("start"), parse_mode="HTML")
 
 
 @dp.message_handler(commands=["help"])
-async def cmd_help(message):
+async def cmd_help(message: types.Message):
     await message.answer(strings.get(get_language(message.from_user.language_code)).get("help"), parse_mode="HTML")
 
 
 @dp.message_handler(commands=["settings"])
-async def cmd_settings(message):
+async def cmd_settings(message: types.Message):
     await message.answer(text=dbworker.get_settings_text(message.chat.id, message.from_user.language_code),
                      reply_markup=make_settings_keyboard_for_user(message.chat.id, message.from_user.language_code), parse_mode="Markdown")
 
@@ -144,50 +144,50 @@ def generate_custom(user):
 
 
 @dp.message_handler(commands=["generate"])
-async def cmd_generate_custom(message):
+async def cmd_generate_custom(message: types.Message):
     await message.answer(text="<code>{}</code>".format(generate_custom(message.chat.id)), parse_mode="HTML",
                      reply_markup=make_regenerate_keyboard(message.from_user.language_code))
 
 
 @dp.message_handler(commands=["generate_weak"])
-async def cmd_generate_weak_password(message):
+async def cmd_generate_weak_password(message: types.Message):
     await message.answer(f"<code>{generate_weak_pwd()}</code>", parse_mode="HTML")
 
 
 @dp.message_handler(commands=["generate_normal"])
-async def cmd_generate_normal_password(message):
+async def cmd_generate_normal_password(message: types.Message):
     await message.answer(f"<code>{generate_normal_pwd()}</code>", parse_mode="HTML")
 
 
 @dp.message_handler(commands=["generate_strong"])
-async def cmd_generate_strong_password(message):
+async def cmd_generate_strong_password(message: types.Message):
     await message.answer(f"<code>{generate_strong_pwd()}</code>", parse_mode="HTML")
 
 
 @dp.message_handler(commands=["generate_stronger"])
-async def cmd_generate_stronger_password(message):
+async def cmd_generate_stronger_password(message: types.Message):
     await message.answer(f"<code>{generate_stronger_pwd()}</code>", parse_mode="HTML")
 
 
 @dp.message_handler(commands=["generate_insane"])
-async def cmd_generate_insane_password(message):
+async def cmd_generate_insane_password(message: types.Message):
     await message.answer(f"<code>{generate_insane_pwd()}</code>", parse_mode="HTML")
 
 
-@dp.message_handler(lambda message: True)
-async def default(message):
+@dp.message_handler()  # Default messages handler
+async def default(message: types.Message):
     await cmd_generate_strong_password(message)
 
 
 @dp.callback_query_handler(lambda call: call.data == "regenerate")
-async def regenerate(call):
-    await bot.edit_message_text(f"<code>{generate_custom(call.from_user.id)}</code>", chat_id=call.from_user.id, parse_mode="HTML",
-                          message_id=call.message.message_id, reply_markup=make_regenerate_keyboard(call.from_user.language_code))
-    await bot.answer_callback_query(callback_query_id=call.id)
+async def regenerate(call: types.CallbackQuery):
+    await call.message.edit_text(text=f"<code>{generate_custom(call.from_user.id)}</code>", parse_mode="HTML",
+                                 reply_markup=make_regenerate_keyboard(call.from_user.language_code))
+    await call.answer()
 
 
-@dp.callback_query_handler(lambda call: True)
-async def handle_callbacks(call):
+@dp.callback_query_handler()  # Default callback buttons handler
+async def handle_callbacks(call: types.CallbackQuery):
     if call.data == "disable_prefixes":
         dbworker.change_prefixes(call.from_user.id, enable_prefixes=False)
     if call.data == "enable_prefixes":
@@ -200,21 +200,20 @@ async def handle_callbacks(call):
         dbworker.change_word_count(call.from_user.id, increase=False)
     if call.data == "plus_word":
         dbworker.change_word_count(call.from_user.id, increase=True)
-    await bot.edit_message_text(text=dbworker.get_settings_text(call.from_user.id, call.from_user.language_code), chat_id=call.from_user.id,
-                          message_id=call.message.message_id, parse_mode="Markdown",
-                          reply_markup=make_settings_keyboard_for_user(call.from_user.id, call.from_user.language_code))
-    await bot.answer_callback_query(callback_query_id=call.id)
+    await call.message.edit_text(text=dbworker.get_settings_text(call.from_user.id, call.from_user.language_code), parse_mode="Markdown",
+                                 reply_markup=make_settings_keyboard_for_user(call.from_user.id, call.from_user.language_code))
+    await call.answer()
 
 
-@dp.inline_handler(lambda query: True)
-async def inline(query):
+@dp.inline_handler()  # Default inline mode handler
+async def inline(query: types.InlineQuery):
     results = [
         types.InlineQueryResultArticle(
             id="1",
             title="Insane password",
             description="2 prefixes, 2 suffixes, 3 words, separated by the same (random) symbol",
             input_message_content=types.InputTextMessageContent(
-                message_text="<code>{}</code>".format(generate_insane_pwd()),
+                message_text=f"<code>{generate_insane_pwd()}</code>",
                 parse_mode="HTML"
             ),
             thumb_url="https://raw.githubusercontent.com/MasterGroosha/telegram-xkcd-password-generator/master/img/pwd_green.png",
@@ -227,7 +226,7 @@ async def inline(query):
             title="Very strong password",
             description="4 words, random uppercase, separated by numbers",
             input_message_content=types.InputTextMessageContent(
-                message_text="<code>{}</code>".format(generate_stronger_pwd()),
+                message_text=f"<code>{generate_stronger_pwd()}</code>",
                 parse_mode="HTML"
             ),
             thumb_url="https://raw.githubusercontent.com/MasterGroosha/telegram-xkcd-password-generator/master/img/pwd_green.png",
@@ -240,7 +239,7 @@ async def inline(query):
             title="Strong password",
             description="3 words, random uppercase, separated by numbers",
             input_message_content=types.InputTextMessageContent(
-                message_text="<code>{}</code>".format(generate_strong_pwd()),
+                message_text=f"<code>{generate_strong_pwd()}</code>",
                 parse_mode="HTML"
             ),
             thumb_url="https://raw.githubusercontent.com/MasterGroosha/telegram-xkcd-password-generator/master/img/pwd_yellow.png",
@@ -253,7 +252,7 @@ async def inline(query):
             title="Normal password",
             description="3 words, second one is uppercase",
             input_message_content=types.InputTextMessageContent(
-                message_text="<code>{}</code>".format(generate_normal_pwd()),
+                message_text=f"<code>{generate_normal_pwd()}</code>",
                 parse_mode="HTML"
             ),
             thumb_url="https://raw.githubusercontent.com/MasterGroosha/telegram-xkcd-password-generator/master/img/pwd_yellow.png",
@@ -266,7 +265,7 @@ async def inline(query):
             title="Weak password",
             description="2 words, no digits",
             input_message_content=types.InputTextMessageContent(
-                message_text="<code>{}</code>".format(generate_weak_pwd()),
+                message_text=f"<code>{generate_weak_pwd()}</code>",
                 parse_mode="HTML"
             ),
             thumb_url="https://raw.githubusercontent.com/MasterGroosha/telegram-xkcd-password-generator/master/img/pwd_red.png",
@@ -274,7 +273,7 @@ async def inline(query):
             thumb_width=64,
         )
     ]
-    await bot.answer_inline_query(inline_query_id=query.id, results=results, cache_time=1, is_personal=True)
+    await query.answer(results=results, cache_time=1, is_personal=True)
 
 
 if __name__ == '__main__':
