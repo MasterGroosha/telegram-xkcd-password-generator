@@ -30,7 +30,7 @@ def get_person(user_id):
     # Check if user exists
     S = Query()
     person = db.search(S.user_id == user_id)
-    if len(person) is 0:
+    if len(person) == 0:
         usr = {"user_id": user_id,
                "word_count": DEFAULT_WORD_COUNT,
                "prefixes": DEFAULT_PREFIX_SUFFIX,
