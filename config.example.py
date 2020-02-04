@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 # Token of your bot (get from @BotFather)
 token = "YOUR_TOKEN_HERE"
 

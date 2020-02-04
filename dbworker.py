@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from tinydb import TinyDB, Query
 from tinydb.operations import increment, decrement
 from texts import strings
