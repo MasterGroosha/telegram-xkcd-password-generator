@@ -160,23 +160,23 @@ async def cmd_generate_normal_password(message):
 
 
 @dp.message_handler(commands=["generate_strong"])
-async def generate_normal_password(message):
+async def cmd_generate_strong_password(message):
     await message.answer(f"<code>{generate_strong_pwd()}</code>", parse_mode="HTML")
 
 
 @dp.message_handler(commands=["generate_stronger"])
-async def cmd_generate_normal_password(message):
+async def cmd_generate_stronger_password(message):
     await message.answer(f"<code>{generate_stronger_pwd()}</code>", parse_mode="HTML")
 
 
 @dp.message_handler(commands=["generate_insane"])
-async def cmd_generate_normal_password(message):
+async def cmd_generate_insane_password(message):
     await message.answer(f"<code>{generate_insane_pwd()}</code>", parse_mode="HTML")
 
 
 @dp.message_handler(lambda message: True)
 async def default(message):
-    await bot.send_message(message.chat.id, text="<code>{}</code>".format(generate_strong_pwd()), parse_mode="HTML")
+    await cmd_generate_strong_password(message)
 
 
 @dp.callback_query_handler(lambda call: call.data == "regenerate")
