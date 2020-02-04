@@ -2,17 +2,18 @@
 # -*- coding: utf-8 -*-
 # TODO: Make CAPITALIZATION configurable
 
-import telebot
-from telebot import types
 import config
-import cherrypy
+import logging
+from aiogram import Bot, Dispatcher, executor, types
 from xkcdpass import xkcd_password as xp
 import random
 import dbworker
 from utils import get_language
 from texts import strings
 
-bot = telebot.TeleBot(config.token)
+bot = Bot(token=config.token)
+dp = Dispatcher(bot)
+logging.basicConfig(level=logging.INFO)
 
 
 def make_settings_keyboard_for_user(user_id, lang_code):
@@ -52,24 +53,24 @@ def make_regenerate_keyboard(lang_code):
 
 
 # In case you have HUGE problems, uncomment these lines and let bot to skip all "bad" messages
-# @bot.message_handler(func=lambda message: True)
-# def skip(message):
+# @dp.message_handler(lambda message: True)
+# async def skip(message):
 #     return
 
 
-@bot.message_handler(commands=["start"])
-def cmd_start(message):
-    bot.send_message(message.chat.id, strings.get(get_language(message.from_user.language_code)).get("start"), parse_mode="HTML")
+@dp.message_handler(commands=["start"])
+async def cmd_start(message):
+    await bot.send_message(message.chat.id, strings.get(get_language(message.from_user.language_code)).get("start"), parse_mode="HTML")
 
 
-@bot.message_handler(commands=["help"])
-def cmd_help(message):
-    bot.send_message(message.chat.id, strings.get(get_language(message.from_user.language_code)).get("help"), parse_mode="HTML")
+@dp.message_handler(commands=["help"])
+async def cmd_help(message):
+    await bot.send_message(message.chat.id, strings.get(get_language(message.from_user.language_code)).get("help"), parse_mode="HTML")
 
 
-@bot.message_handler(commands=["settings"])
-def cmd_settings(message):
-    bot.send_message(message.chat.id, text=dbworker.get_settings_text(message.chat.id, message.from_user.language_code),
+@dp.message_handler(commands=["settings"])
+async def cmd_settings(message):
+    await bot.send_message(message.chat.id, text=dbworker.get_settings_text(message.chat.id, message.from_user.language_code),
                      reply_markup=make_settings_keyboard_for_user(message.chat.id, message.from_user.language_code), parse_mode="Markdown")
 
 
@@ -142,51 +143,51 @@ def generate_custom(user):
     return password
 
 
-@bot.message_handler(commands=["generate"])
-def cmd_generate_custom(message):
-    bot.send_message(chat_id=message.chat.id, text="<code>{}</code>".format(generate_custom(message.chat.id)), parse_mode="HTML",
+@dp.message_handler(commands=["generate"])
+async def cmd_generate_custom(message):
+    await bot.send_message(chat_id=message.chat.id, text="<code>{}</code>".format(generate_custom(message.chat.id)), parse_mode="HTML",
                      reply_markup=make_regenerate_keyboard(message.from_user.language_code))
 
 
-@bot.message_handler(commands=["generate_weak"])
-def cmd_generate_weak_password(message):
-    bot.send_message(message.chat.id, text="<code>{}</code>".format(generate_weak_pwd()), parse_mode="HTML")
+@dp.message_handler(commands=["generate_weak"])
+async def cmd_generate_weak_password(message):
+    await bot.send_message(message.chat.id, text="<code>{}</code>".format(generate_weak_pwd()), parse_mode="HTML")
 
 
-@bot.message_handler(commands=["generate_normal"])
-def cmd_generate_normal_password(message):
-    bot.send_message(message.chat.id, text="<code>{}</code>".format(generate_normal_pwd()), parse_mode="HTML")
+@dp.message_handler(commands=["generate_normal"])
+async def cmd_generate_normal_password(message):
+    await bot.send_message(message.chat.id, text="<code>{}</code>".format(generate_normal_pwd()), parse_mode="HTML")
 
 
-@bot.message_handler(commands=["generate_strong"])
-def generate_normal_password(message):
-    bot.send_message(message.chat.id, text="<code>{}</code>".format(generate_strong_pwd()), parse_mode="HTML")
+@dp.message_handler(commands=["generate_strong"])
+async def generate_normal_password(message):
+    await bot.send_message(message.chat.id, text="<code>{}</code>".format(generate_strong_pwd()), parse_mode="HTML")
 
 
-@bot.message_handler(commands=["generate_stronger"])
-def cmd_generate_normal_password(message):
-    bot.send_message(message.chat.id, text="<code>{}</code>".format(generate_stronger_pwd()), parse_mode="HTML")
+@dp.message_handler(commands=["generate_stronger"])
+async def cmd_generate_normal_password(message):
+    await bot.send_message(message.chat.id, text="<code>{}</code>".format(generate_stronger_pwd()), parse_mode="HTML")
 
 
-@bot.message_handler(commands=["generate_insane"])
-def cmd_generate_normal_password(message):
-    bot.send_message(message.chat.id, text="<code>{}</code>".format(generate_insane_pwd()), parse_mode="HTML")
+@dp.message_handler(commands=["generate_insane"])
+async def cmd_generate_normal_password(message):
+    await bot.send_message(message.chat.id, text="<code>{}</code>".format(generate_insane_pwd()), parse_mode="HTML")
 
 
-@bot.message_handler(func=lambda message: True)
-def default(message):
-    bot.send_message(message.chat.id, text="<code>{}</code>".format(generate_strong_pwd()), parse_mode="HTML")
+@dp.message_handler(lambda message: True)
+async def default(message):
+    await bot.send_message(message.chat.id, text="<code>{}</code>".format(generate_strong_pwd()), parse_mode="HTML")
 
 
-@bot.callback_query_handler(func=lambda call: call.data == "regenerate")
-def regenerate(call):
-    bot.edit_message_text(text="<code>{}</code>".format(generate_custom(call.from_user.id)), chat_id=call.from_user.id, parse_mode="HTML",
+@dp.callback_query_handler(lambda call: call.data == "regenerate")
+async def regenerate(call):
+    await bot.edit_message_text(text="<code>{}</code>".format(generate_custom(call.from_user.id)), chat_id=call.from_user.id, parse_mode="HTML",
                           message_id=call.message.message_id, reply_markup=make_regenerate_keyboard(call.from_user.language_code))
-    bot.answer_callback_query(callback_query_id=call.id)
+    await bot.answer_callback_query(callback_query_id=call.id)
 
 
-@bot.callback_query_handler(func=lambda call: True)
-def handle_callbacks(call):
+@dp.callback_query_handler(lambda call: True)
+async def handle_callbacks(call):
     if call.data == "disable_prefixes":
         dbworker.change_prefixes(call.from_user.id, enable_prefixes=False)
     if call.data == "enable_prefixes":
@@ -199,14 +200,14 @@ def handle_callbacks(call):
         dbworker.change_word_count(call.from_user.id, increase=False)
     if call.data == "plus_word":
         dbworker.change_word_count(call.from_user.id, increase=True)
-    bot.edit_message_text(text=dbworker.get_settings_text(call.from_user.id, call.from_user.language_code), chat_id=call.from_user.id,
+    await bot.edit_message_text(text=dbworker.get_settings_text(call.from_user.id, call.from_user.language_code), chat_id=call.from_user.id,
                           message_id=call.message.message_id, parse_mode="Markdown",
                           reply_markup=make_settings_keyboard_for_user(call.from_user.id, call.from_user.language_code))
-    bot.answer_callback_query(callback_query_id=call.id)
+    await bot.answer_callback_query(callback_query_id=call.id)
 
 
-@bot.inline_handler(lambda query: True)
-def inline(query):
+@dp.inline_handler(lambda query: True)
+async def inline(query):
     results = [
         types.InlineQueryResultArticle(
             id="1",
@@ -273,26 +274,12 @@ def inline(query):
             thumb_width=64,
         )
     ]
-    bot.answer_inline_query(inline_query_id=query.id, results=results, cache_time=1, is_personal=True)
-
-
-class WebhookServer(object):
-    """
-    This is my custom CherryPyServer Object for use with Nginx backend.
-    You may want to get original WebhookServer object here: http://bit.ly/29ETlEy
-    """
-    @cherrypy.expose
-    def index(self):
-        length = int(cherrypy.request.headers['content-length'])
-        json_string = cherrypy.request.body.read(length).decode("utf-8")
-        update = telebot.types.Update.de_json(json_string)
-        bot.process_new_updates([update])
-        return ''
+    await bot.answer_inline_query(inline_query_id=query.id, results=results, cache_time=1, is_personal=True)
 
 
 if __name__ == '__main__':
     global wordlist
     wordlist = xp.generate_wordlist(wordfile=config.words_file, min_length=4, max_length=10, valid_chars="[a-z]")
 
-    # You may want to use webhooks here...
-    bot.polling(none_stop=True)
+    # aiogram's polling is MUCH better than pyTelegramBotAPI's, so we can simply use it.
+    executor.start_polling(dp, skip_updates=True)
