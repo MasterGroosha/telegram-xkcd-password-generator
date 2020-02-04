@@ -60,17 +60,17 @@ def make_regenerate_keyboard(lang_code):
 
 @dp.message_handler(commands=["start"])
 async def cmd_start(message):
-    await bot.send_message(message.chat.id, strings.get(get_language(message.from_user.language_code)).get("start"), parse_mode="HTML")
+    await message.answer(strings.get(get_language(message.from_user.language_code)).get("start"), parse_mode="HTML")
 
 
 @dp.message_handler(commands=["help"])
 async def cmd_help(message):
-    await bot.send_message(message.chat.id, strings.get(get_language(message.from_user.language_code)).get("help"), parse_mode="HTML")
+    await message.answer(strings.get(get_language(message.from_user.language_code)).get("help"), parse_mode="HTML")
 
 
 @dp.message_handler(commands=["settings"])
 async def cmd_settings(message):
-    await bot.send_message(message.chat.id, text=dbworker.get_settings_text(message.chat.id, message.from_user.language_code),
+    await message.answer(text=dbworker.get_settings_text(message.chat.id, message.from_user.language_code),
                      reply_markup=make_settings_keyboard_for_user(message.chat.id, message.from_user.language_code), parse_mode="Markdown")
 
 
@@ -145,33 +145,33 @@ def generate_custom(user):
 
 @dp.message_handler(commands=["generate"])
 async def cmd_generate_custom(message):
-    await bot.send_message(chat_id=message.chat.id, text="<code>{}</code>".format(generate_custom(message.chat.id)), parse_mode="HTML",
+    await message.answer(text="<code>{}</code>".format(generate_custom(message.chat.id)), parse_mode="HTML",
                      reply_markup=make_regenerate_keyboard(message.from_user.language_code))
 
 
 @dp.message_handler(commands=["generate_weak"])
 async def cmd_generate_weak_password(message):
-    await bot.send_message(message.chat.id, text="<code>{}</code>".format(generate_weak_pwd()), parse_mode="HTML")
+    await message.answer(f"<code>{generate_weak_pwd()}</code>", parse_mode="HTML")
 
 
 @dp.message_handler(commands=["generate_normal"])
 async def cmd_generate_normal_password(message):
-    await bot.send_message(message.chat.id, text="<code>{}</code>".format(generate_normal_pwd()), parse_mode="HTML")
+    await message.answer(f"<code>{generate_normal_pwd()}</code>", parse_mode="HTML")
 
 
 @dp.message_handler(commands=["generate_strong"])
 async def generate_normal_password(message):
-    await bot.send_message(message.chat.id, text="<code>{}</code>".format(generate_strong_pwd()), parse_mode="HTML")
+    await message.answer(f"<code>{generate_strong_pwd()}</code>", parse_mode="HTML")
 
 
 @dp.message_handler(commands=["generate_stronger"])
 async def cmd_generate_normal_password(message):
-    await bot.send_message(message.chat.id, text="<code>{}</code>".format(generate_stronger_pwd()), parse_mode="HTML")
+    await message.answer(f"<code>{generate_stronger_pwd()}</code>", parse_mode="HTML")
 
 
 @dp.message_handler(commands=["generate_insane"])
 async def cmd_generate_normal_password(message):
-    await bot.send_message(message.chat.id, text="<code>{}</code>".format(generate_insane_pwd()), parse_mode="HTML")
+    await message.answer(f"<code>{generate_insane_pwd()}</code>", parse_mode="HTML")
 
 
 @dp.message_handler(lambda message: True)
@@ -181,7 +181,7 @@ async def default(message):
 
 @dp.callback_query_handler(lambda call: call.data == "regenerate")
 async def regenerate(call):
-    await bot.edit_message_text(text="<code>{}</code>".format(generate_custom(call.from_user.id)), chat_id=call.from_user.id, parse_mode="HTML",
+    await bot.edit_message_text(f"<code>{generate_custom(call.from_user.id)}</code>", chat_id=call.from_user.id, parse_mode="HTML",
                           message_id=call.message.message_id, reply_markup=make_regenerate_keyboard(call.from_user.language_code))
     await bot.answer_callback_query(callback_query_id=call.id)
 
