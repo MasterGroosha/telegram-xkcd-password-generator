@@ -8,15 +8,15 @@ Try it now: https://t.me/passgenbot
 * Ability to generate customized password  
 * Inline mode with colored complexity
 * No personal data is collected!  
-* Basic multilanguage support (En+Ru), depending on `language_code` from Bot API
+* Basic multilanguage support (En+Ru), depending on `language_code` from Bot API  
+* Compatible with Python 3.7+
 
 Don't forget to rename `config.example.py` to `config.py` and put your data instead of stubs.
 
 ### Used modules
-* [pyTelegramBotAPI](https://github.com/eternnoir/pyTelegramBotAPI) – Awesome Telegram API wrapper
+* [aiogram](https://github.com/aiogram/aiogram) – Awesome Telegram Bot API framework
 * [TinyDB](https://github.com/msiemens/tinydb) – Simple and pretty fast document-oriented DB
 * [XKCD-password-generator](https://github.com/redacted/XKCD-password-generator) – It goes without saying :)
-* [CherryPy](https://github.com/cherrypy/cherrypy) – Web-Server for using with Webhooks  
 
 ### Presets
  ![Presets](https://pp.vk.me/c636824/v636824512/19583/hJgaGSvCn8c.jpg)
@@ -38,7 +38,3 @@ With `/settings` command you can customize generated passwords. Currently suppor
 ![Inline mode](https://pp.vk.me/c636824/v636824512/1959c/Y3f8VXAWOdw.jpg)
 
 You can also use this bot in inline mode. An indicator on the left shows rough password complexity (green is good, red is not).
-
-
-### My other projects
-* [Telegram Proxy Bot](https://bitbucket.org/mastergroosha/telegram-proxy-bot) – A "virtual" bot account for chatting with other people without telling your real username (one bot for one person)   
