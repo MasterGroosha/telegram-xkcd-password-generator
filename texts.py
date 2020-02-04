@@ -13,9 +13,7 @@ en_text_help = "<a href=\"http://imgs.xkcd.com/comics/password_strength.png\">&#
     "/generate_stronger – Same as \"strong\", but using 4 words\n"\
     "/generate_insane – 4 words, second one CAPITALIZED, separators, prefixes and suffixes\n\n"\
     "By the way, this bot has its source code open: "\
-    "<a href=\"https://github.com/MasterGroosha/telegram-xkcd-password-generator\">(Github)</a>\n" \
-    "If you still have some questions, feel free to contact me via my bot: @msg_proxy_bot (please, don't use " \
-    "it for spam)"
+    "<a href=\"https://github.com/MasterGroosha/telegram-xkcd-password-generator\">(Github)</a>"
 
 en_text_start = "<a href=\"http://imgs.xkcd.com/comics/password_strength.png\">&#8203;</a>" \
     "You can use this bot to generate <a href=\"http://xkcd.com/936/\">readable passwords</a>.\n" \
@@ -43,9 +41,7 @@ ru_text_help = "<a href=\"http://imgs.xkcd.com/comics/password_strength.png\">&#
     "/generate_stronger – То же, что и предыдущее, но используются 4 слова\n"\
     "/generate_insane – 4 слова, второе ПРОПИСНЫМИ буквами, есть разделители, префиксы и суффиксы\n\n"\
     "Между прочим, исходный код бота открыт: "\
-    "<a href=\"https://github.com/MasterGroosha/telegram-xkcd-password-generator\">(Github)</a>\n" \
-    "Если у вас остались какие-либо вопросы, можете задать их через бота @msg_proxy_bot (пожалуйста, " \
-    "не спамьте!)"
+    "<a href=\"https://github.com/MasterGroosha/telegram-xkcd-password-generator\">(Github)</a>"
 
 ru_text_start = "<a href=\"http://imgs.xkcd.com/comics/password_strength.png\">&#8203;</a>" \
     "Вы можете использовать этого бота для генерации безопасных <a href=\"http://xkcd.com/936/\">читабельных паролей</a>.\n" \
