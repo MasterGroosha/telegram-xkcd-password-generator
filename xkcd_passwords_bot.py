@@ -10,7 +10,7 @@ import dbworker
 from utils import get_language
 from texts import strings
 
-bot = Bot(token=config.token)
+bot = Bot(token=config.token, parse_mode="HTML")
 dp = Dispatcher(bot)
 logging.basicConfig(level=logging.INFO)
 
@@ -59,18 +59,18 @@ def make_regenerate_keyboard(lang_code):
 
 @dp.message_handler(commands=["start"])
 async def cmd_start(message: types.Message):
-    await message.answer(strings.get(get_language(message.from_user.language_code)).get("start"), parse_mode="HTML")
+    await message.answer(strings.get(get_language(message.from_user.language_code)).get("start"))
 
 
 @dp.message_handler(commands=["help"])
 async def cmd_help(message: types.Message):
-    await message.answer(strings.get(get_language(message.from_user.language_code)).get("help"), parse_mode="HTML")
+    await message.answer(strings.get(get_language(message.from_user.language_code)).get("help"))
 
 
 @dp.message_handler(commands=["settings"])
 async def cmd_settings(message: types.Message):
     await message.answer(text=dbworker.get_settings_text(message.chat.id, message.from_user.language_code),
-                     reply_markup=make_settings_keyboard_for_user(message.chat.id, message.from_user.language_code), parse_mode="Markdown")
+                     reply_markup=make_settings_keyboard_for_user(message.chat.id, message.from_user.language_code))
 
 
 # Used to decide whether to capitalize the whole world or not
@@ -144,33 +144,33 @@ def generate_custom(user):
 
 @dp.message_handler(commands=["generate"])
 async def cmd_generate_custom(message: types.Message):
-    await message.answer(text="<code>{}</code>".format(generate_custom(message.chat.id)), parse_mode="HTML",
+    await message.answer(text="<code>{}</code>".format(generate_custom(message.chat.id)),
                      reply_markup=make_regenerate_keyboard(message.from_user.language_code))
 
 
 @dp.message_handler(commands=["generate_weak"])
 async def cmd_generate_weak_password(message: types.Message):
-    await message.answer(f"<code>{generate_weak_pwd()}</code>", parse_mode="HTML")
+    await message.answer(f"<code>{generate_weak_pwd()}</code>")
 
 
 @dp.message_handler(commands=["generate_normal"])
 async def cmd_generate_normal_password(message: types.Message):
-    await message.answer(f"<code>{generate_normal_pwd()}</code>", parse_mode="HTML")
+    await message.answer(f"<code>{generate_normal_pwd()}</code>")
 
 
 @dp.message_handler(commands=["generate_strong"])
 async def cmd_generate_strong_password(message: types.Message):
-    await message.answer(f"<code>{generate_strong_pwd()}</code>", parse_mode="HTML")
+    await message.answer(f"<code>{generate_strong_pwd()}</code>")
 
 
 @dp.message_handler(commands=["generate_stronger"])
 async def cmd_generate_stronger_password(message: types.Message):
-    await message.answer(f"<code>{generate_stronger_pwd()}</code>", parse_mode="HTML")
+    await message.answer(f"<code>{generate_stronger_pwd()}</code>")
 
 
 @dp.message_handler(commands=["generate_insane"])
 async def cmd_generate_insane_password(message: types.Message):
-    await message.answer(f"<code>{generate_insane_pwd()}</code>", parse_mode="HTML")
+    await message.answer(f"<code>{generate_insane_pwd()}</code>")
 
 
 @dp.message_handler()  # Default messages handler
@@ -180,7 +180,7 @@ async def default(message: types.Message):
 
 @dp.callback_query_handler(lambda call: call.data == "regenerate")
 async def regenerate(call: types.CallbackQuery):
-    await call.message.edit_text(text=f"<code>{generate_custom(call.from_user.id)}</code>", parse_mode="HTML",
+    await call.message.edit_text(text=f"<code>{generate_custom(call.from_user.id)}</code>",
                                  reply_markup=make_regenerate_keyboard(call.from_user.language_code))
     await call.answer()
 
@@ -199,7 +199,7 @@ async def handle_callbacks(call: types.CallbackQuery):
         dbworker.change_word_count(call.from_user.id, increase=False)
     if call.data == "plus_word":
         dbworker.change_word_count(call.from_user.id, increase=True)
-    await call.message.edit_text(text=dbworker.get_settings_text(call.from_user.id, call.from_user.language_code), parse_mode="Markdown",
+    await call.message.edit_text(text=dbworker.get_settings_text(call.from_user.id, call.from_user.language_code),
                                  reply_markup=make_settings_keyboard_for_user(call.from_user.id, call.from_user.language_code))
     await call.answer()
 
@@ -212,8 +212,7 @@ async def inline(query: types.InlineQuery):
             title="Insane password",
             description="2 prefixes, 2 suffixes, 3 words, separated by the same (random) symbol",
             input_message_content=types.InputTextMessageContent(
-                message_text=f"<code>{generate_insane_pwd()}</code>",
-                parse_mode="HTML"
+                message_text=f"<code>{generate_insane_pwd()}</code>"
             ),
             thumb_url="https://raw.githubusercontent.com/MasterGroosha/telegram-xkcd-password-generator/master/img/pwd_green.png",
             thumb_height=64,
@@ -225,8 +224,7 @@ async def inline(query: types.InlineQuery):
             title="Very strong password",
             description="4 words, random uppercase, separated by numbers",
             input_message_content=types.InputTextMessageContent(
-                message_text=f"<code>{generate_stronger_pwd()}</code>",
-                parse_mode="HTML"
+                message_text=f"<code>{generate_stronger_pwd()}</code>"
             ),
             thumb_url="https://raw.githubusercontent.com/MasterGroosha/telegram-xkcd-password-generator/master/img/pwd_green.png",
             thumb_height=64,
@@ -238,8 +236,7 @@ async def inline(query: types.InlineQuery):
             title="Strong password",
             description="3 words, random uppercase, separated by numbers",
             input_message_content=types.InputTextMessageContent(
-                message_text=f"<code>{generate_strong_pwd()}</code>",
-                parse_mode="HTML"
+                message_text=f"<code>{generate_strong_pwd()}</code>"
             ),
             thumb_url="https://raw.githubusercontent.com/MasterGroosha/telegram-xkcd-password-generator/master/img/pwd_yellow.png",
             thumb_height=64,
@@ -251,8 +248,7 @@ async def inline(query: types.InlineQuery):
             title="Normal password",
             description="3 words, second one is uppercase",
             input_message_content=types.InputTextMessageContent(
-                message_text=f"<code>{generate_normal_pwd()}</code>",
-                parse_mode="HTML"
+                message_text=f"<code>{generate_normal_pwd()}</code>"
             ),
             thumb_url="https://raw.githubusercontent.com/MasterGroosha/telegram-xkcd-password-generator/master/img/pwd_yellow.png",
             thumb_height=64,
@@ -264,8 +260,7 @@ async def inline(query: types.InlineQuery):
             title="Weak password",
             description="2 words, no digits",
             input_message_content=types.InputTextMessageContent(
-                message_text=f"<code>{generate_weak_pwd()}</code>",
-                parse_mode="HTML"
+                message_text=f"<code>{generate_weak_pwd()}</code>"
             ),
             thumb_url="https://raw.githubusercontent.com/MasterGroosha/telegram-xkcd-password-generator/master/img/pwd_red.png",
             thumb_height=64,
