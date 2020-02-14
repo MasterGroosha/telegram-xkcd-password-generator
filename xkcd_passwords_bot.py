@@ -51,12 +51,6 @@ def make_regenerate_keyboard(lang_code):
     return keyboard
 
 
-# In case you have HUGE problems, uncomment these lines and let bot to skip all "bad" messages
-# @dp.message_handler()
-# async def skip(message: types.Message):
-#     return
-
-
 @dp.message_handler(commands=["start"])
 async def cmd_start(message: types.Message):
     await message.answer(strings.get(get_language(message.from_user.language_code)).get("start"))
