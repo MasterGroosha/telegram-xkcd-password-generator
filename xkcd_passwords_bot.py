@@ -109,8 +109,9 @@ def generate_stronger_pwd():
 def generate_insane_pwd():
     # 4 words, second one CAPITALIZED, separators, prefixes and suffixes
     words = xp.generate_xkcdpassword(wordlist=wordlist, numwords=4, delimiter=" ").split()
-    return "{randsymbol}{randsymbol}{word0}{separator}{word1}{separator}{word2}{randsymbol}{randsymbol}" \
-        .format(randsymbol=random.choice("!$%^&*-_+=:|~?/.;0123456789"),
+    return "{prefix}{word0}{separator}{word1}{separator}{word2}{suffix}" \
+        .format(prefix=random.choice("!$%^&*-_+=:|~?/.;0123456789"),
+                suffix=random.choice("!$%^&*-_+=:|~?/.;0123456789"),
                 word0=words[0],
                 word1=str.upper(words[1]),
                 word2=words[2],
@@ -127,9 +128,10 @@ def generate_custom(user):
 
     # Add prefixes/suffixes (if needed)
     if user["prefixes"]:
-        password = "{prefix!s}{password}{prefix!s}".format(
+        password = "{prefix!s}{password}{suffix!s}".format(
             prefix=random.choice("!$%^&*-_+=:|~?/.;0123456789"),
-            password=_pwd
+            password=_pwd,
+            suffix=random.choice("!$%^&*-_+=:|~?/.;0123456789")
         )
     else:
         password = _pwd
