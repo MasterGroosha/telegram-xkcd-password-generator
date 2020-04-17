@@ -109,13 +109,14 @@ def generate_stronger_pwd():
 def generate_insane_pwd():
     # 4 words, second one CAPITALIZED, separators, prefixes and suffixes
     words = xp.generate_xkcdpassword(wordlist=wordlist, numwords=4, delimiter=" ").split()
-    return "{prefix}{word0}{separator}{word1}{separator}{word2}{suffix}" \
+    return "{prefix}{word0}{separator1}{word1}{separator2}{word2}{suffix}" \
         .format(prefix=random.choice("!$%^&*-_+=:|~?/.;0123456789"),
                 suffix=random.choice("!$%^&*-_+=:|~?/.;0123456789"),
                 word0=words[0],
                 word1=str.upper(words[1]),
                 word2=words[2],
-                separator=random.choice(".$*;_=:|~?!%-+"))
+                separator1=random.choice(".$*;_=:|~?!%-+"),
+                separator2=random.choice(".$*;_=:|~?!%-+"))
 
 
 def generate_custom(user):
@@ -124,7 +125,12 @@ def generate_custom(user):
         wordlist=wordlist, numwords=user["word_count"], delimiter=" ").split()
              ]
     # Generate password without prefixes & suffixes
-    _pwd = random.choice(".$*;_=:|~?!%-+").join(words) if user["separators"] else "".join(words)
+    result_array = []
+    for i in range(user["word_count"]-1):
+        result_array.append(words[i])
+        result_array.append(random.choice(".$*;_=:|~?!%-+"))
+    result_array.append(words[-1])
+    _pwd = "".join(result_array)
 
     # Add prefixes/suffixes (if needed)
     if user["prefixes"]:
