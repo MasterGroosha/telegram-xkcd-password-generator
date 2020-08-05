@@ -20,6 +20,7 @@ def make_settings_keyboard_for_user(user_id, lang_code):
     Prepare keyboard for user based on his settings
 
     :param user_id: User ID in Telegram
+    :param lang_code: User's language code
     :return: Inline Keyboard object
     """
     user = dbworker.get_person(user_id)
@@ -27,26 +28,33 @@ def make_settings_keyboard_for_user(user_id, lang_code):
 
     wrds_lst = []
     if user["word_count"] >= (config.length_min + 1):
-        wrds_lst.append(types.InlineKeyboardButton(text=strings.get(get_language(lang_code)).get("minusword"), callback_data="minus_word"))
+        wrds_lst.append(types.InlineKeyboardButton(text=strings.get(get_language(lang_code)).get("minusword"),
+                                                   callback_data="minus_word"))
     if user["word_count"] <= (config.length_max - 1):
-        wrds_lst.append(types.InlineKeyboardButton(text=strings.get(get_language(lang_code)).get("plusword"), callback_data="plus_word"))
+        wrds_lst.append(types.InlineKeyboardButton(text=strings.get(get_language(lang_code)).get("plusword"),
+                                                   callback_data="plus_word"))
     kb.add(*wrds_lst)
 
     if user["prefixes"]:
-        kb.add(types.InlineKeyboardButton(text=strings.get(get_language(lang_code)).get("minuspref"), callback_data="disable_prefixes"))
+        kb.add(types.InlineKeyboardButton(text=strings.get(get_language(lang_code)).get("minuspref"),
+                                          callback_data="disable_prefixes"))
     else:
-        kb.add(types.InlineKeyboardButton(text=strings.get(get_language(lang_code)).get("pluspref"), callback_data="enable_prefixes"))
+        kb.add(types.InlineKeyboardButton(text=strings.get(get_language(lang_code)).get("pluspref"),
+                                          callback_data="enable_prefixes"))
 
     if user["separators"]:
-        kb.add(types.InlineKeyboardButton(text=strings.get(get_language(lang_code)).get("minussep"), callback_data="disable_separators"))
+        kb.add(types.InlineKeyboardButton(text=strings.get(get_language(lang_code)).get("minussep"),
+                                          callback_data="disable_separators"))
     else:
-        kb.add(types.InlineKeyboardButton(text=strings.get(get_language(lang_code)).get("plussep"), callback_data="enable_separators"))
+        kb.add(types.InlineKeyboardButton(text=strings.get(get_language(lang_code)).get("plussep"),
+                                          callback_data="enable_separators"))
     return kb
 
 
 def make_regenerate_keyboard(lang_code):
     keyboard = types.InlineKeyboardMarkup()
-    btn = types.InlineKeyboardButton(text=strings.get(get_language(lang_code)).get("regenerate"), callback_data="regenerate")
+    btn = types.InlineKeyboardButton(text=strings.get(get_language(lang_code)).get("regenerate"),
+                                     callback_data="regenerate")
     keyboard.add(btn)
     return keyboard
 
@@ -64,7 +72,7 @@ async def cmd_help(message: types.Message):
 @dp.message_handler(commands=["settings"])
 async def cmd_settings(message: types.Message):
     await message.answer(text=dbworker.get_settings_text(message.chat.id, message.from_user.language_code),
-                     reply_markup=make_settings_keyboard_for_user(message.chat.id, message.from_user.language_code))
+                         reply_markup=make_settings_keyboard_for_user(message.chat.id, message.from_user.language_code))
 
 
 # Used to decide whether to capitalize the whole world or not
@@ -126,7 +134,7 @@ def generate_custom(user):
              ]
     # Generate password without prefixes & suffixes
     result_array = []
-    for i in range(user["word_count"]-1):
+    for i in range(user["word_count"] - 1):
         result_array.append(words[i])
         result_array.append(random.choice(".$*;_=:|~?!%-+"))
     result_array.append(words[-1])
@@ -147,7 +155,7 @@ def generate_custom(user):
 @dp.message_handler(commands=["generate"])
 async def cmd_generate_custom(message: types.Message):
     await message.answer(text="<code>{}</code>".format(generate_custom(message.chat.id)),
-                     reply_markup=make_regenerate_keyboard(message.from_user.language_code))
+                         reply_markup=make_regenerate_keyboard(message.from_user.language_code))
 
 
 @dp.message_handler(commands=["generate_weak"])
@@ -202,7 +210,8 @@ async def handle_callbacks(call: types.CallbackQuery):
     if call.data == "plus_word":
         dbworker.change_word_count(call.from_user.id, increase=True)
     await call.message.edit_text(text=dbworker.get_settings_text(call.from_user.id, call.from_user.language_code),
-                                 reply_markup=make_settings_keyboard_for_user(call.from_user.id, call.from_user.language_code))
+                                 reply_markup=make_settings_keyboard_for_user(call.from_user.id,
+                                                                              call.from_user.language_code))
     await call.answer()
 
 
