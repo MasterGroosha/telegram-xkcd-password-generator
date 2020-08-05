@@ -19,6 +19,7 @@ logging.basicConfig(level=logging.INFO)
 
 cb_wordcount = CallbackData("word", "change")
 cb_prefixes = CallbackData("prefixes", "action")
+cb_separators = CallbackData("separators", "action")
 
 
 def make_settings_keyboard_for_user(user_id, lang_code):
@@ -50,10 +51,10 @@ def make_settings_keyboard_for_user(user_id, lang_code):
 
     if user["separators"]:
         kb.add(types.InlineKeyboardButton(text=strings.get(get_language(lang_code)).get("minussep"),
-                                          callback_data="disable_separators"))
+                                          callback_data=cb_separators.new(action="disable")))
     else:
         kb.add(types.InlineKeyboardButton(text=strings.get(get_language(lang_code)).get("plussep"),
-                                          callback_data="enable_separators"))
+                                          callback_data=cb_separators.new(action="enable")))
     return kb
 
 
@@ -229,15 +230,17 @@ async def toggle_prefixes(call: types.CallbackQuery, callback_data: Dict[str, st
     await call.answer()
 
 
-@dp.callback_query_handler()  # Default callback buttons handler
-async def handle_callbacks(call: types.CallbackQuery):
-    if call.data == "disable_separators":
+@dp.callback_query_handler(cb_separators.filter())
+async def toggle_separators(call: types.CallbackQuery, callback_data: Dict[str, str]):
+    if callback_data["action"] == "disable":
         dbworker.change_separators(call.from_user.id, enable_separators=False)
-    if call.data == "enable_separators":
+    elif callback_data["action"] == "enable":
         dbworker.change_separators(call.from_user.id, enable_separators=True)
+    else:
+        return
+
     await call.message.edit_text(text=dbworker.get_settings_text(call.from_user.id, call.from_user.language_code),
-                                 reply_markup=make_settings_keyboard_for_user(call.from_user.id,
-                                                                              call.from_user.language_code))
+                                 reply_markup=make_settings_keyboard_for_user(call.from_user.id, call.from_user.language_code))
     await call.answer()
 
 
