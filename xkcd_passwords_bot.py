@@ -3,7 +3,9 @@
 
 import config
 import logging
+from typing import Dict
 from aiogram import Bot, Dispatcher, executor, types
+from aiogram.utils.callback_data import CallbackData
 from xkcdpass import xkcd_password as xp
 import random
 import dbworker
@@ -13,6 +15,9 @@ from texts import strings
 bot = Bot(token=config.token, parse_mode="HTML")
 dp = Dispatcher(bot)
 logging.basicConfig(level=logging.INFO)
+
+
+cb_wordcount = CallbackData("word", "change")
 
 
 def make_settings_keyboard_for_user(user_id, lang_code):
@@ -29,10 +34,10 @@ def make_settings_keyboard_for_user(user_id, lang_code):
     wrds_lst = []
     if user["word_count"] >= (config.length_min + 1):
         wrds_lst.append(types.InlineKeyboardButton(text=strings.get(get_language(lang_code)).get("minusword"),
-                                                   callback_data="minus_word"))
+                                                   callback_data=cb_wordcount.new(change="minus")))
     if user["word_count"] <= (config.length_max - 1):
         wrds_lst.append(types.InlineKeyboardButton(text=strings.get(get_language(lang_code)).get("plusword"),
-                                                   callback_data="plus_word"))
+                                                   callback_data=cb_wordcount.new(change="plus")))
     kb.add(*wrds_lst)
 
     if user["prefixes"]:
@@ -195,6 +200,20 @@ async def regenerate(call: types.CallbackQuery):
     await call.answer()
 
 
+@dp.callback_query_handler(cb_wordcount.filter())
+async def change_wordcount(call: types.CallbackQuery, callback_data: Dict[str, str]):
+    if callback_data["change"] == "minus":
+        dbworker.change_word_count(call.from_user.id, increase=False)
+    elif callback_data["change"] == "plus":
+        dbworker.change_word_count(call.from_user.id, increase=True)
+    else:
+        return
+
+    await call.message.edit_text(text=dbworker.get_settings_text(call.from_user.id, call.from_user.language_code),
+                                 reply_markup=make_settings_keyboard_for_user(call.from_user.id, call.from_user.language_code))
+    await call.answer()
+
+
 @dp.callback_query_handler()  # Default callback buttons handler
 async def handle_callbacks(call: types.CallbackQuery):
     if call.data == "disable_prefixes":
@@ -205,10 +224,6 @@ async def handle_callbacks(call: types.CallbackQuery):
         dbworker.change_separators(call.from_user.id, enable_separators=False)
     if call.data == "enable_separators":
         dbworker.change_separators(call.from_user.id, enable_separators=True)
-    if call.data == "minus_word":
-        dbworker.change_word_count(call.from_user.id, increase=False)
-    if call.data == "plus_word":
-        dbworker.change_word_count(call.from_user.id, increase=True)
     await call.message.edit_text(text=dbworker.get_settings_text(call.from_user.id, call.from_user.language_code),
                                  reply_markup=make_settings_keyboard_for_user(call.from_user.id,
                                                                               call.from_user.language_code))
