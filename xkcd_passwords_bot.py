@@ -83,7 +83,7 @@ async def cmd_settings(message: types.Message):
 
 @dp.message_handler(commands=["generate"])
 async def cmd_generate_custom(message: types.Message):
-    await message.answer(text="<code>{}</code>".format(pwdgen.generate_custom(message.chat.id)),
+    await message.answer(text=f"<code>{pwdgen.generate_custom(message.chat.id)}</code>",
                          reply_markup=make_regenerate_keyboard(message.from_user.language_code))
 
 
