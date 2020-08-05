@@ -18,6 +18,7 @@ logging.basicConfig(level=logging.INFO)
 
 
 cb_wordcount = CallbackData("word", "change")
+cb_prefixes = CallbackData("prefixes", "action")
 
 
 def make_settings_keyboard_for_user(user_id, lang_code):
@@ -42,10 +43,10 @@ def make_settings_keyboard_for_user(user_id, lang_code):
 
     if user["prefixes"]:
         kb.add(types.InlineKeyboardButton(text=strings.get(get_language(lang_code)).get("minuspref"),
-                                          callback_data="disable_prefixes"))
+                                          callback_data=cb_prefixes.new(action="disable")))
     else:
         kb.add(types.InlineKeyboardButton(text=strings.get(get_language(lang_code)).get("pluspref"),
-                                          callback_data="enable_prefixes"))
+                                          callback_data=cb_prefixes.new(action="enable")))
 
     if user["separators"]:
         kb.add(types.InlineKeyboardButton(text=strings.get(get_language(lang_code)).get("minussep"),
@@ -214,12 +215,22 @@ async def change_wordcount(call: types.CallbackQuery, callback_data: Dict[str, s
     await call.answer()
 
 
+@dp.callback_query_handler(cb_prefixes.filter())
+async def toggle_prefixes(call: types.CallbackQuery, callback_data: Dict[str, str]):
+    if callback_data["action"] == "disable":
+        dbworker.change_prefixes(call.from_user.id, enable_prefixes=False)
+    elif callback_data["action"] == "enable":
+        dbworker.change_prefixes(call.from_user.id, enable_prefixes=True)
+    else:
+        return
+
+    await call.message.edit_text(text=dbworker.get_settings_text(call.from_user.id, call.from_user.language_code),
+                                 reply_markup=make_settings_keyboard_for_user(call.from_user.id, call.from_user.language_code))
+    await call.answer()
+
+
 @dp.callback_query_handler()  # Default callback buttons handler
 async def handle_callbacks(call: types.CallbackQuery):
-    if call.data == "disable_prefixes":
-        dbworker.change_prefixes(call.from_user.id, enable_prefixes=False)
-    if call.data == "enable_prefixes":
-        dbworker.change_prefixes(call.from_user.id, enable_prefixes=True)
     if call.data == "disable_separators":
         dbworker.change_separators(call.from_user.id, enable_separators=False)
     if call.data == "enable_separators":
