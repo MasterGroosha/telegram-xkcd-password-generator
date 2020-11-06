@@ -1,3 +1,11 @@
+from collections import defaultdict
+
+
+def get_language(lang_code):
+    langs = defaultdict(lambda: 'en', {'ru': 'ru'})
+    return langs[lang_code.split("-")[0]] if lang_code else 'en'
+
+
 en_text_help = """<a href="http://imgs.xkcd.com/comics/password_strength.png">&#8203;</a>\
 The idea of this bot came from <a href="http://xkcd.com/936/">XKCD 936</a> strip. So I decided to make \
 a bot which will help me quickly generate strong and readable passwords without having me open " \

@@ -1,15 +1,14 @@
 from tinydb import TinyDB, Query
 from tinydb.operations import increment, decrement
-from texts import strings
-from config import db_file
-from utils import get_language
+from lang.texts import strings, get_language
+from configurator import config
 
 
 DEFAULT_WORD_COUNT = 3
 DEFAULT_PREFIX_SUFFIX = True
 DEFAULT_SEPARATOR = True
 
-db = TinyDB(db_file)
+db = TinyDB(config.general.db_file)
 
 
 def get_settings_text(user_id, lang_code):

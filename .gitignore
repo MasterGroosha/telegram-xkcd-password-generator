@@ -6,7 +6,7 @@ __pycache__/
 passgenbot.py
 
 # Custom
-config.py
+config/config.ini
 *.json
 .idea/
 .vscode/
