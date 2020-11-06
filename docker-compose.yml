@@ -5,4 +5,5 @@ services:
         container_name: "tg-passgen-bot"
         volumes:
             - './data/config:/app/config'
+            - './data/database:/app/database'
         restart: unless-stopped
