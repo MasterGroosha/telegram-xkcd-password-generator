@@ -6,7 +6,7 @@ import dbworker
 import keyboards.inline_kb as kb
 
 
-@dp.callback_query_handler(lambda call: call.data == "regenerate")
+@dp.callback_query_handler(text="regenerate")
 async def regenerate(call: types.CallbackQuery):
     await call.message.edit_text(text=f"<code>{pwdgen.generate_custom(call.from_user.id)}</code>",
                                  reply_markup=kb.make_regenerate_keyboard(call.from_user.language_code))
