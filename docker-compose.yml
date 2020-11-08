@@ -4,6 +4,5 @@ services:
         image: telegram-passgen-bot:latest
         container_name: "tg-passgen-bot"
         volumes:
-            - './data/config:/app/config'
-            - './data/database:/app/database'
+            - './data:/app/data'
         restart: unless-stopped

@@ -1,6 +1,6 @@
 from aiogram import types
 from misc import dp
-import pwdgen
+from other import pwdgen
 
 
 @dp.inline_handler()  # Default inline mode handler

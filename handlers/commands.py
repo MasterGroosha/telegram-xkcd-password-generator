@@ -1,9 +1,7 @@
 from aiogram import types
 from misc import dp
-from lang.texts import strings, get_language
-import pwdgen
-import dbworker
-import keyboards.inline_kb as kb
+from other.texts import strings, get_language
+from other import dbworker, pwdgen, keyboards as kb
 
 
 @dp.message_handler(commands=["start"])

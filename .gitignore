@@ -3,13 +3,12 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *$py.class
-passgenbot.py
 
 # Custom
-config/config.ini
-*.json
 .idea/
 .vscode/
+/data/config/config.py
+/data/database/database.json
 
 # C extensions
 *.so

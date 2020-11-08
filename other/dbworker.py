@@ -1,23 +1,26 @@
 from tinydb import TinyDB, Query
 from tinydb.operations import increment, decrement
-from lang.texts import strings, get_language
-from configurator import config
-
+from other.texts import strings, get_language
+import data.config.config as config
 
 DEFAULT_WORD_COUNT = 3
 DEFAULT_PREFIX_SUFFIX = True
 DEFAULT_SEPARATOR = True
 
-db = TinyDB(config.general.db_file)
+db = TinyDB(config.db_file)
 
 
 def get_settings_text(user_id, lang_code):
     user = get_person(user_id)
-    text = strings.get(get_language(lang_code)).get("settings").format(num_of_words=user["word_count"],
+    text = strings.get(get_language(lang_code)).get("settings").format(
+        num_of_words=user["word_count"],
         prefixes=strings.get(get_language(lang_code)).get("yes")
-            if user["prefixes"] else strings.get(get_language(lang_code)).get("no"),
+        if user["prefixes"]
+        else strings.get(get_language(lang_code)).get("no"),
         separators=strings.get(get_language(lang_code)).get("yes")
-            if user["separators"] else strings.get(get_language(lang_code)).get("no"))
+        if user["separators"]
+        else strings.get(get_language(lang_code)).get("no")
+    )
     return text
 
 

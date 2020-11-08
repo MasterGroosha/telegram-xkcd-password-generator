@@ -1,7 +1,7 @@
 import random
 from xkcdpass import xkcd_password
-import dbworker
-from configurator import config
+from other import dbworker
+import data.config.config as config
 
 
 # Used to decide whether to capitalize the whole world or not

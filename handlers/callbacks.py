@@ -1,9 +1,8 @@
 from typing import Dict
 from aiogram import types
 from misc import dp
-import pwdgen
-import dbworker
-import keyboards.inline_kb as kb
+from other import dbworker, pwdgen
+from other import keyboards as kb
 
 
 @dp.callback_query_handler(text="regenerate")
