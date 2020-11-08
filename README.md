@@ -9,8 +9,7 @@ Try it now: https://t.me/passgenbot
 * Inline mode with colored complexity
 * No personal data is collected!  
 * Basic multilanguage support (En+Ru), depending on `language_code` from Bot API
-
-Don't forget to rename `config.example.py` to `config.py` and put your data instead of stubs.
+* [Docker support](#docker)
 
 ### Requirements
 * Python 3.7+  
@@ -40,3 +39,18 @@ With `/settings` command you can customize generated passwords. Currently suppor
 ![Inline mode](img/readme_inline.png)
 
 You can also use this bot in inline mode. An indicator on the left shows rough password complexity (green is good, red is not).
+
+### Docker
+
+This bot supports deployment via Docker-compose. First, build an image using provided Dockerfile:  
+`docker build --tag telegram-passgen-bot:latest .`  
+
+Then create a directory structure for your bot, e.g.:  
+```bash
+mkdir -p /opt/passgenbot/data/{config,database}
+touch /opt/passgenbot/data/config/config.ini
+```
+
+Use [config.example.ini](https://github.com/MasterGroosha/telegram-xkcd-password-generator/blob/master/data/config/config.example.ini) as an example 
+of your `config.ini` file, then place [docker-compose.yml](https://github.com/MasterGroosha/telegram-xkcd-password-generator/blob/master/docker-compose.yml) file 
+next to created `data` directory, `cd` to it and run `docker-compose up -d`. Check logs using `docker-compose logs`.
