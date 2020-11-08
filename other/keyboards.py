@@ -1,7 +1,7 @@
 from typing import Dict
 from aiogram import types
 from aiogram.utils.callback_data import CallbackData
-import data.config.config as config
+from other.config import Config
 from other.texts import strings, get_language
 
 cb_wordcount = CallbackData("word", "change")
@@ -18,12 +18,13 @@ def make_settings_keyboard_for_user(user: Dict, lang_code: str):
     :return: Inline Keyboard object
     """
     kb = types.InlineKeyboardMarkup()
+    config = Config()
 
     wrds_lst = []
-    if user["word_count"] >= (config.words_min + 1):
+    if user["word_count"] >= (config.pwd_words.min + 1):
         wrds_lst.append(types.InlineKeyboardButton(text=strings.get(get_language(lang_code)).get("minusword"),
                                                    callback_data=cb_wordcount.new(change="minus")))
-    if user["word_count"] <= (config.words_max - 1):
+    if user["word_count"] <= (config.pwd_words.max - 1):
         wrds_lst.append(types.InlineKeyboardButton(text=strings.get(get_language(lang_code)).get("plusword"),
                                                    callback_data=cb_wordcount.new(change="plus")))
     kb.add(*wrds_lst)

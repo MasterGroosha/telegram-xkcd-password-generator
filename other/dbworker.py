@@ -1,13 +1,12 @@
 from tinydb import TinyDB, Query
 from tinydb.operations import increment, decrement
 from other.texts import strings, get_language
-import data.config.config as config
+from other.config import Config
+
 
 DEFAULT_WORD_COUNT = 3
 DEFAULT_PREFIX_SUFFIX = True
 DEFAULT_SEPARATOR = True
-
-db = TinyDB(config.db_file)
 
 
 def get_settings_text(user_id, lang_code):
@@ -25,45 +24,50 @@ def get_settings_text(user_id, lang_code):
 
 
 def user_exists(user_id):
-    return bool(db.search(Query().user_id == user_id))
+    config = Config()
+    return bool(config.tinydb.search(Query().user_id == user_id))
 
 
 def get_person(user_id):
     # Check if user exists
     S = Query()
-    person = db.search(S.user_id == user_id)
+    config = Config()
+    person = config.tinydb.search(S.user_id == user_id)
     if len(person) == 0:
         usr = {"user_id": user_id,
                "word_count": DEFAULT_WORD_COUNT,
                "prefixes": DEFAULT_PREFIX_SUFFIX,
                "separators": DEFAULT_SEPARATOR}
-        db.insert(usr)
+        config.tinydb.insert(usr)
         return usr
     return person[0]
 
 
 def change_word_count(user_id, increase):
     S = Query()
+    config = Config()
     if increase:
-        db.update(increment("word_count"), S.user_id == user_id)
+        config.tinydb.update(increment("word_count"), S.user_id == user_id)
     else:
-        db.update(decrement("word_count"), S.user_id == user_id)
-    return db.search(S.user_id == user_id)[0]
+        config.tinydb.update(decrement("word_count"), S.user_id == user_id)
+    return config.tinydb.search(S.user_id == user_id)[0]
 
 
 def change_prefixes(user_id, enable_prefixes):
     S = Query()
+    config = Config()
     if enable_prefixes:
-        db.update({"prefixes": True}, S.user_id == user_id)
+        config.tinydb.update({"prefixes": True}, S.user_id == user_id)
     else:
-        db.update({"prefixes": False}, S.user_id == user_id)
-    return db.search(S.user_id == user_id)[0]
+        config.tinydb.update({"prefixes": False}, S.user_id == user_id)
+    return config.tinydb.search(S.user_id == user_id)[0]
 
 
 def change_separators(user_id, enable_separators):
     S = Query()
+    config = Config()
     if enable_separators:
-        db.update({"separators": True}, S.user_id == user_id)
+        config.tinydb.update({"separators": True}, S.user_id == user_id)
     else:
-        db.update({"separators": False}, S.user_id == user_id)
-    return db.search(S.user_id == user_id)[0]
+        config.tinydb.update({"separators": False}, S.user_id == user_id)
+    return config.tinydb.search(S.user_id == user_id)[0]
