@@ -5,14 +5,6 @@ from tinydb import TinyDB
 from typing import List
 
 
-class Singleton(type):
-    _instances = {}
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
-        return cls._instances[cls]
-
-
 @dataclass
 class BotConfig:
     token: str
@@ -27,15 +19,15 @@ class PwdConfig:
 
 
 @dataclass
-class Config(metaclass=Singleton):
+class Config:
     bot: BotConfig = None
     pwd_words: PwdConfig = None
     wordlist: List[str] = None
     tinydb = None
 
-    # @classmethod
-    # def get_instance(cls):
-    #     return Config()
+
+# Global config object
+config = None
 
 
 def load_config(path: str):
@@ -57,6 +49,7 @@ def load_config(path: str):
                 raise ValueError(f'missing required option "{option}" in section "{section}" in config file')
 
     # All checks passed, time to init objects
+    global config
     config = Config(
         bot=BotConfig(
             token=cfg["general"]["token"],

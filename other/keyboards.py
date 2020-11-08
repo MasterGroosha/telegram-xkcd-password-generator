@@ -1,7 +1,7 @@
 from typing import Dict
 from aiogram import types
 from aiogram.utils.callback_data import CallbackData
-from other.config import Config
+from other.config import config
 from other.texts import strings, get_language
 
 cb_wordcount = CallbackData("word", "change")
@@ -18,7 +18,6 @@ def make_settings_keyboard_for_user(user: Dict, lang_code: str):
     :return: Inline Keyboard object
     """
     kb = types.InlineKeyboardMarkup()
-    config = Config()
 
     wrds_lst = []
     if user["word_count"] >= (config.pwd_words.min + 1):

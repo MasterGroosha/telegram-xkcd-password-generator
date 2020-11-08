@@ -1,7 +1,7 @@
 from tinydb import TinyDB, Query
 from tinydb.operations import increment, decrement
 from other.texts import strings, get_language
-from other.config import Config
+from other.config import config
 
 
 DEFAULT_WORD_COUNT = 3
@@ -24,14 +24,12 @@ def get_settings_text(user_id, lang_code):
 
 
 def user_exists(user_id):
-    config = Config()
     return bool(config.tinydb.search(Query().user_id == user_id))
 
 
 def get_person(user_id):
     # Check if user exists
     S = Query()
-    config = Config()
     person = config.tinydb.search(S.user_id == user_id)
     if len(person) == 0:
         usr = {"user_id": user_id,
@@ -45,7 +43,6 @@ def get_person(user_id):
 
 def change_word_count(user_id, increase):
     S = Query()
-    config = Config()
     if increase:
         config.tinydb.update(increment("word_count"), S.user_id == user_id)
     else:
@@ -55,7 +52,6 @@ def change_word_count(user_id, increase):
 
 def change_prefixes(user_id, enable_prefixes):
     S = Query()
-    config = Config()
     if enable_prefixes:
         config.tinydb.update({"prefixes": True}, S.user_id == user_id)
     else:
@@ -65,7 +61,6 @@ def change_prefixes(user_id, enable_prefixes):
 
 def change_separators(user_id, enable_separators):
     S = Query()
-    config = Config()
     if enable_separators:
         config.tinydb.update({"separators": True}, S.user_id == user_id)
     else:
