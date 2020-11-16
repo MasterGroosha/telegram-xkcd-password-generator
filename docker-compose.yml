@@ -2,7 +2,40 @@ version: "3.8"
 services:
     bot:
         image: telegram-passgen-bot:latest
-        container_name: "tg-passgen-bot"
-        volumes:
-            - './data:/app/data'
+        container_name: "xkcd-password-generator-bot"
         restart: unless-stopped
+        environment:
+            - BOT_TOKEN=123456:AaBbCcDdEeFfGgHh
+        depends_on:
+            - redis
+        volumes:
+            - "bot-config:/app/config"
+
+    redis:
+        image: registry.groosha.space/groosha/redis-with-config:v6.0-alpine
+        container_name: "xkcd-password-generator-bot-redis"
+        hostname: redis
+        volumes:
+            - "redis-config:/usr/local/etc/redis"
+            - "redis-data:/data"
+        command: "redis-server /usr/local/etc/redis/redis.conf"
+
+volumes:
+    bot-config:
+        driver: local
+        driver_opts:
+            type: 'none'
+            o: 'bind'
+            device: './bot-config'
+    redis-config:
+        driver: local
+        driver_opts:
+            type: 'none'
+            o: 'bind'
+            device: './redis-config'
+    redis-data:
+        driver: local
+        driver_opts:
+            type: 'none'
+            o: 'bind'
+            device: './redis-data'

@@ -1,10 +1,16 @@
 from other.config import load_config
 from pathlib import Path
+import logging
 
+
+# noinspection PyUnresolvedReferences
 if __name__ == '__main__':
-    # First initialize and check our config
+    # Configure logging
+    logging.basicConfig(level=logging.INFO)
+
+    # Initialize and check our config
     try:
-        load_config(Path.joinpath(Path(__file__).parent, "data/config/config.ini"))
+        load_config(Path.joinpath(Path(__file__).parent, "config/config.ini"))
     except ValueError as ex:
         exit(f"Error: {ex}")
 
@@ -13,4 +19,4 @@ if __name__ == '__main__':
     from misc import dp
     import handlers
 
-    executor.start_polling(dp, skip_updates=True)
+    executor.start_polling(dp, skip_updates=True, on_startup=handlers.commands.register_bot_commands)

@@ -1,29 +1,33 @@
 from aiogram import types
+from aiogram.dispatcher import FSMContext
 from misc import dp
-from other.texts import strings, get_language
-from other import dbworker, pwdgen, keyboards as kb
+from other import texts
+from other import pwdgen, storage, keyboards as kb
 
 
 @dp.message_handler(commands=["start"])
-async def cmd_start(message: types.Message):
-    await message.answer(strings.get(get_language(message.from_user.language_code)).get("start"))
+async def cmd_start(message: types.Message, state: FSMContext):
+    await storage.verify_user_data(state)
+    await message.answer(texts.all_strings.get(texts.get_language(message.from_user.language_code)).get("start"))
 
 
 @dp.message_handler(commands=["help"])
 async def cmd_help(message: types.Message):
-    await message.answer(strings.get(get_language(message.from_user.language_code)).get("help"))
+    await message.answer(texts.all_strings.get(texts.get_language(message.from_user.language_code)).get("help"))
 
 
 @dp.message_handler(commands=["settings"])
-async def cmd_settings(message: types.Message):
-    await message.answer(text=dbworker.get_settings_text(message.chat.id, message.from_user.language_code),
-                         reply_markup=kb.make_settings_keyboard_for_user(dbworker.get_person(message.chat.id),
-                                                                         message.from_user.language_code))
+async def cmd_settings(message: types.Message, state: FSMContext):
+    keyboard = await kb.make_settings_keyboard_for_user_async(state, message.from_user.language_code)
+    user_data = await state.get_data()
+    user_lang = texts.get_language(message.from_user.language_code)
+    await message.answer(text=texts.get_settings_string(user_data, user_lang), reply_markup=keyboard)
 
 
 @dp.message_handler(commands=["generate"])
-async def cmd_generate_custom(message: types.Message):
-    await message.answer(text=f"<code>{pwdgen.generate_custom(message.chat.id)}</code>",
+async def cmd_generate_custom(message: types.Message, state: FSMContext):
+    data = await state.get_data()
+    await message.answer(text=f"<code>{pwdgen.generate_custom(data)}</code>",
                          reply_markup=kb.make_regenerate_keyboard(message.from_user.language_code))
 
 
@@ -55,3 +59,17 @@ async def cmd_generate_insane_password(message: types.Message):
 @dp.message_handler()  # Default messages handler
 async def default(message: types.Message):
     await cmd_generate_strong_password(message)
+
+
+async def register_bot_commands(dispatcher):
+    commands = [
+        types.BotCommand(command="generate", description="custom password, configured in /settings"),
+        types.BotCommand(command="generate_weak", description="2 words, no digits"),
+        types.BotCommand(command="generate_normal", description="3 words, second one uppercase"),
+        types.BotCommand(command="generate_strong", description="3 words, random uppercase, separated by numbers"),
+        types.BotCommand(command="generate_stronger", description="4 words, random uppercase, separated by numbers"),
+        types.BotCommand(command="generate_insane", description="3 words, prefixes, suffixes, separators, random uppercase"),
+        types.BotCommand(command="settings", description="customize /generate results"),
+        types.BotCommand(command="help", description="help and source code")
+    ]
+    await dp.bot.set_my_commands(commands)

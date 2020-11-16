@@ -1,4 +1,14 @@
 from collections import defaultdict
+from typing import Dict
+
+
+def get_settings_string(user_data: Dict, user_language: str) -> str:
+    toggles = ["no", "yes"]  # Choose from "no" or "yes" key depending on False/True values
+    return all_strings.get(user_language, "en")["settings"].format(
+        num_of_words=user_data["words_count"],
+        prefixes=all_strings[user_language][toggles[bool(user_data["prefixes_suffixes"])]],
+        separators=all_strings[user_language][toggles[bool(user_data["separators"])]]
+    )
 
 
 def get_language(lang_code):
@@ -21,7 +31,8 @@ You can choose from one of presets or customize passwords with /settings command
 /generate_insane – 4 words, second one CAPITALIZED, separators, prefixes and suffixes
 
 By the way, check out bot's source code: \
-<a href="https://github.com/MasterGroosha/telegram-xkcd-password-generator">Github</a>"""
+<a href="https://git.groosha.space/groosha/passgenbot">GitLab</a> or 
+<a href="https://github.com/MasterGroosha/telegram-xkcd-password-generator">GitHub</a> (mirror)."""
 
 en_text_start = """<a href="http://imgs.xkcd.com/comics/password_strength.png">&#8203;</a>\
 You can use this bot to generate <a href="http://xkcd.com/936/">readable passwords</a>.
@@ -54,7 +65,8 @@ ru_text_help = """<a href="http://imgs.xkcd.com/comics/password_strength.png">&#
 /generate_insane – 4 слова, второе ПРОПИСНЫМИ буквами, есть разделители, префиксы и суффиксы
 
 Исходные тексты бота доступны по ссылке: \
-<a href="https://github.com/MasterGroosha/telegram-xkcd-password-generator">Github</a>"""
+<a href="https://git.groosha.space/groosha/passgenbot">GitLab</a> или 
+<a href="https://github.com/MasterGroosha/telegram-xkcd-password-generator">GitHub</a> (зеркало)."""
 
 ru_text_start = """<a href="http://imgs.xkcd.com/comics/password_strength.png">&#8203;</a>\
 Вы можете использовать этого бота для генерации безопасных <a href="http://xkcd.com/936/">читабельных паролей</a>.
@@ -71,7 +83,7 @@ ru_text_settings_choose = """Ваши настройки:
 Используйте кнопки ниже для изменения настроек.
 Затем вызовите команду /generate для генерации пароля с этими настройками."""
 
-strings = {
+all_strings = {
     "en": {
         "start": en_text_start,
         "help": en_text_help,
