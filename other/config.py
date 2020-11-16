@@ -1,14 +1,23 @@
 from configparser import ConfigParser
 from dataclasses import dataclass
 from xkcdpass import xkcd_password
-from tinydb import TinyDB
 from typing import List
+from enum import Enum
+
+
+class DBKeys(Enum):
+    WORDS_COUNT = "words_count"
+    PREFIXES_SUFFIXES = "prefixes_suffixes"
+    SEPARATORS = "separators"
+
+
+# Global config object
+app_config = None
 
 
 @dataclass
 class BotConfig:
     token: str
-    db_file: str
     words_file: str
 
 
@@ -19,21 +28,25 @@ class PwdConfig:
 
 
 @dataclass
+class DefaultValues:
+    words_count: int
+    prefixes_suffixes: bool
+    separators: bool
+
+
+@dataclass
 class Config:
     bot: BotConfig = None
     pwd_words: PwdConfig = None
+    default: DefaultValues = None
     wordlist: List[str] = None
-    tinydb = None
-
-
-# Global config object
-config = None
 
 
 def load_config(path: str):
     required_schema = {
-        "general": ["token", "db_file", "words_file"],
-        "pwd_words_count": ["min", "max"]
+        "general": ["token", "words_file"],
+        "pwd_words_count": ["min", "max"],
+        "default": ["words_count", "prefixes_suffixes", "separators"]
     }
     cfg = ConfigParser()
     cfg.read(path)
@@ -49,19 +62,22 @@ def load_config(path: str):
                 raise ValueError(f'missing required option "{option}" in section "{section}" in config file')
 
     # All checks passed, time to init objects
-    global config
-    config = Config(
+    global app_config
+    app_config = Config(
         bot=BotConfig(
             token=cfg["general"]["token"],
-            db_file=cfg["general"]["db_file"],
             words_file=cfg["general"]["words_file"]
         ),
         pwd_words=PwdConfig(
             min=cfg.getint("pwd_words_count", "min"),
             max=cfg.getint("pwd_words_count", "max"),
+        ),
+        default=DefaultValues(
+            words_count=cfg.getint("default", "words_count"),
+            prefixes_suffixes=cfg.getboolean("default", "prefixes_suffixes"),
+            separators=cfg.getboolean("default", "separators")
         )
     )
-    config.wordlist = xkcd_password.generate_wordlist(wordfile=config.bot.words_file,
-                                                      min_length=4, max_length=10, valid_chars="[a-z]")
-    config.tinydb = TinyDB(config.bot.db_file)
-    return config
+    app_config.wordlist = xkcd_password.generate_wordlist(wordfile=app_config.bot.words_file,
+                                                          min_length=4, max_length=10, valid_chars="[a-z]")
+    return app_config

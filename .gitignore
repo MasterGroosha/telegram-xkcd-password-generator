@@ -7,8 +7,6 @@ __pycache__/
 # Custom
 .idea/
 .vscode/
-/data/config/config.py
-/data/database/database.json
 
 # C extensions
 *.so
