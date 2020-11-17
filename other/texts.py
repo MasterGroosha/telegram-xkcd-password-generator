@@ -21,14 +21,14 @@ The idea of this bot came from <a href="http://xkcd.com/936/">XKCD 936</a> strip
 a bot which will help me quickly generate strong and readable passwords without having me open " \
 KeePass or any other app.
 
-You can choose from one of presets or customize passwords with /settings command and then generate them with /generate.
+Choose from one of presets or customize passwords with /settings command and then generate them with /generate.
+You can also use this bot in <a href="https://core.telegram.org/bots/inline">inline mode</a>.
 
 <b>Available presets</b>:
-/generate_weak – 2 words, no separators between words
-/generate_normal – 3 words, no separators between words, second word is CAPITALIZED
-/generate_strong – 3 words, random CAPITALIZATION, random number as separator between words
-/generate_stronger – Same as "strong", but using 4 words
-/generate_insane – 4 words, second one CAPITALIZED, separators, prefixes and suffixes
+/generate_weak – 2 words, no digits
+/generate_normal – 3 words, random UPPERCASE, separated by numbers
+/generate_strong – 4 words, random UPPERCASE, no separators
+/generate_insane – 3 words, prefixes, suffixes, separators, random UPPERCASE
 
 By the way, check out bot's source code: \
 <a href="https://git.groosha.space/groosha/passgenbot">GitLab</a> or 
@@ -54,15 +54,15 @@ ru_text_help = """<a href="http://imgs.xkcd.com/comics/password_strength.png">&#
 После чего я решил создать инструмент для удобной генерации сложных, но читабельных паролей без необходимости \
 открывать KeePass или что-либо ещё.
 
-Вы можете выбрать один из шаблонов для генерации пароля или настроить его по своему желанию командой /settings. \
+Выберите один из шаблонов для генерации пароля или настроить по своему желанию командой /settings. \
 Затем создайте пароль командой /generate.
+Также поддерживается работа в <a href="https://core.telegram.org/bots/inline">инлайн-режиме</a>.
 
 <b>Доступные шаблоны</b>:
-/generate_weak – 2 слова, без разделителей
-/generate_normal – 3 слова, без разделителей между словами, второе слово написано ПРОПИСНЫМИ буквами
-/generate_strong – 3 слова, случайный выбор слова для записи ПРОПИСНЫМИ, случайная цифра в качестве разделителя
-/generate_stronger – То же, что и предыдущее, но используются 4 слова
-/generate_insane – 4 слова, второе ПРОПИСНЫМИ буквами, есть разделители, префиксы и суффиксы
+/generate_weak – 2 слова строчными буквами, без разделителей
+/generate_normal – 3 слова, случайных выбор ПРОПИСНЫХ слов, случайные цифры в качестве разделителей
+/generate_strong – 4 слова, случайных выбор ПРОПИСНЫХ слов, без разделителей
+/generate_insane – 3 слова, случайных выбор ПРОПИСНЫХ слов, есть разделители, префиксы и суффиксы
 
 Исходные тексты бота доступны по ссылке: \
 <a href="https://git.groosha.space/groosha/passgenbot">GitLab</a> или 

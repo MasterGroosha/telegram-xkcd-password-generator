@@ -14,12 +14,6 @@ def generate_weak_pwd():
 
 
 def generate_normal_pwd():
-    # 3 words, no separators between words, second word is CAPITALIZED
-    words = xkcd_password.generate_xkcdpassword(wordlist=app_config.wordlist, numwords=3, delimiter=" ").split()
-    return "{0}{1}{2}".format(words[0], str.upper(words[1]), words[2])
-
-
-def generate_strong_pwd():
     # 3 words, random CAPITALIZATION, random number as separator between words
     words = xkcd_password.generate_xkcdpassword(wordlist=app_config.wordlist, numwords=3, delimiter=" ").split()
     return "{word0}{randnum0}{word1}{randnum1}{word2}".format(word0=str.upper(words[0]) if throw_random() else words[0],
@@ -29,17 +23,15 @@ def generate_strong_pwd():
                                                               randnum1=random.randint(0, 9))
 
 
-def generate_stronger_pwd():
-    # Same as "strong", but using 4 words
+def generate_strong_pwd():
+    # 4 words, random capitalization, no separators
     words = xkcd_password.generate_xkcdpassword(wordlist=app_config.wordlist, numwords=4, delimiter=" ").split()
-    return "{word0}{randnum0}{word1}{randnum1}{word2}{randnum2}{word3}" \
+    return "{word0}{word1}{word2}{word3}" \
         .format(word0=str.upper(words[0]) if throw_random() else words[0],
                 word1=str.upper(words[1]) if throw_random() else words[1],
                 word2=str.upper(words[2]) if throw_random() else words[2],
-                word3=str.upper(words[3]) if throw_random() else words[3],
-                randnum0=random.randint(0, 9),
-                randnum1=random.randint(0, 9),
-                randnum2=random.randint(0, 9))
+                word3=str.upper(words[3]) if throw_random() else words[3]
+                )
 
 
 def generate_insane_pwd():

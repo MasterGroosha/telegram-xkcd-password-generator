@@ -46,11 +46,6 @@ async def cmd_generate_strong_password(message: types.Message):
     await message.answer(f"<code>{pwdgen.generate_strong_pwd()}</code>")
 
 
-@dp.message_handler(commands=["generate_stronger"])
-async def cmd_generate_stronger_password(message: types.Message):
-    await message.answer(f"<code>{pwdgen.generate_stronger_pwd()}</code>")
-
-
 @dp.message_handler(commands=["generate_insane"])
 async def cmd_generate_insane_password(message: types.Message):
     await message.answer(f"<code>{pwdgen.generate_insane_pwd()}</code>")
@@ -58,16 +53,15 @@ async def cmd_generate_insane_password(message: types.Message):
 
 @dp.message_handler()  # Default messages handler
 async def default(message: types.Message):
-    await cmd_generate_strong_password(message)
+    await cmd_generate_normal_password(message)
 
 
 async def register_bot_commands(dispatcher):
     commands = [
         types.BotCommand(command="generate", description="custom password, configured in /settings"),
         types.BotCommand(command="generate_weak", description="2 words, no digits"),
-        types.BotCommand(command="generate_normal", description="3 words, second one uppercase"),
-        types.BotCommand(command="generate_strong", description="3 words, random uppercase, separated by numbers"),
-        types.BotCommand(command="generate_stronger", description="4 words, random uppercase, separated by numbers"),
+        types.BotCommand(command="generate_normal", description="3 words, random uppercase, separated by numbers"),
+        types.BotCommand(command="generate_strong", description="4 words, random uppercase, no separators"),
         types.BotCommand(command="generate_insane", description="3 words, prefixes, suffixes, separators, random uppercase"),
         types.BotCommand(command="settings", description="customize /generate results"),
         types.BotCommand(command="help", description="help and source code")
