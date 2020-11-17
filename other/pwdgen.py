@@ -55,7 +55,8 @@ def generate_custom(user):
     result_array = []
     for i in range(user[DBKeys.WORDS_COUNT.value] - 1):
         result_array.append(words[i])
-        result_array.append(random.choice(".$*;_=:|~?!%-+"))
+        if user[DBKeys.SEPARATORS.value]:
+            result_array.append(random.choice(".$*;_=:|~?!%-+"))
     result_array.append(words[-1])
     _pwd = "".join(result_array)
 
