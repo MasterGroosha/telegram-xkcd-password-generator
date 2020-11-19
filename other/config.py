@@ -17,7 +17,6 @@ app_config = None
 
 @dataclass
 class BotConfig:
-    token: str
     words_file: str
 
 
@@ -44,7 +43,7 @@ class Config:
 
 def load_config(path: str):
     required_schema = {
-        "general": ["token", "words_file"],
+        "general": ["words_file"],
         "pwd_words_count": ["min", "max"],
         "default": ["words_count", "prefixes_suffixes", "separators"]
     }
@@ -65,7 +64,6 @@ def load_config(path: str):
     global app_config
     app_config = Config(
         bot=BotConfig(
-            token=cfg["general"]["token"],
             words_file=cfg["general"]["words_file"]
         ),
         pwd_words=PwdConfig(
