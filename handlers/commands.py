@@ -2,12 +2,15 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 from misc import dp
 from other import texts
-from other import pwdgen, storage, keyboards as kb
+from other import pwdgen, keyboards as kb
+from other.storage import get_data
 
 
 @dp.message_handler(commands=["start"])
 async def cmd_start(message: types.Message, state: FSMContext):
-    await storage.verify_user_data(state)
+    # Initialize values for new user or update possible missing values for existing one
+    await get_data(state)
+
     await message.answer(texts.all_strings.get(texts.get_language(message.from_user.language_code)).get("start"))
 
 
@@ -18,8 +21,8 @@ async def cmd_help(message: types.Message):
 
 @dp.message_handler(commands=["settings"])
 async def cmd_settings(message: types.Message, state: FSMContext):
+    user_data = await get_data(state)
     keyboard = await kb.make_settings_keyboard_for_user_async(state, message.from_user.language_code)
-    user_data = await state.get_data()
     user_lang = texts.get_language(message.from_user.language_code)
     await message.answer(text=texts.get_settings_string(user_data, user_lang), reply_markup=keyboard)
 

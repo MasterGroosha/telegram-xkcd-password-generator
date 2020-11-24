@@ -10,12 +10,12 @@ def throw_random():
 
 def generate_weak_pwd():
     # 2 words, no separators between words
-    return xkcd_password.generate_xkcdpassword(wordlist=app_config.wordlist, numwords=2, delimiter="")
+    return xkcd_password.generate_xkcdpassword(wordlist=app_config.words, numwords=2, delimiter="")
 
 
 def generate_normal_pwd():
     # 3 words, random CAPITALIZATION, random number as separator between words
-    words = xkcd_password.generate_xkcdpassword(wordlist=app_config.wordlist, numwords=3, delimiter=" ").split()
+    words = xkcd_password.generate_xkcdpassword(wordlist=app_config.words, numwords=3, delimiter=" ").split()
     return "{word0}{randnum0}{word1}{randnum1}{word2}".format(word0=str.upper(words[0]) if throw_random() else words[0],
                                                               word1=str.upper(words[1]) if throw_random() else words[1],
                                                               word2=str.upper(words[2]) if throw_random() else words[2],
@@ -25,7 +25,7 @@ def generate_normal_pwd():
 
 def generate_strong_pwd():
     # 4 words, random capitalization, no separators
-    words = xkcd_password.generate_xkcdpassword(wordlist=app_config.wordlist, numwords=4, delimiter=" ").split()
+    words = xkcd_password.generate_xkcdpassword(wordlist=app_config.words, numwords=4, delimiter=" ").split()
     return "{word0}{word1}{word2}{word3}" \
         .format(word0=str.upper(words[0]) if throw_random() else words[0],
                 word1=str.upper(words[1]) if throw_random() else words[1],
@@ -36,7 +36,7 @@ def generate_strong_pwd():
 
 def generate_insane_pwd():
     # 4 words, second one CAPITALIZED, separators, prefixes and suffixes
-    words = xkcd_password.generate_xkcdpassword(wordlist=app_config.wordlist, numwords=4, delimiter=" ").split()
+    words = xkcd_password.generate_xkcdpassword(wordlist=app_config.words, numwords=4, delimiter=" ").split()
     return "{prefix}{word0}{separator1}{word1}{separator2}{word2}{suffix}" \
         .format(prefix=random.choice("!$%^&*-_+=:|~?/.;0123456789"),
                 suffix=random.choice("!$%^&*-_+=:|~?/.;0123456789"),
@@ -49,7 +49,7 @@ def generate_insane_pwd():
 
 def generate_custom(user):
     words = [str.upper(word) if throw_random() else word for word in xkcd_password.generate_xkcdpassword(
-        wordlist=app_config.wordlist, numwords=user[DBKeys.WORDS_COUNT.value], delimiter=" ").split()
+        wordlist=app_config.words, numwords=user[DBKeys.WORDS_COUNT.value], delimiter=" ").split()
              ]
     # Generate password without prefixes & suffixes
     result_array = []

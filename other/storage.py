@@ -2,20 +2,21 @@ from aiogram.dispatcher import FSMContext
 from other.config import app_config, DBKeys
 
 
-async def verify_user_data(state: FSMContext):
+async def get_data(state: FSMContext):
     """
-    Verify integrity of values in FSM context and add missing ones.
-    Values are compared against [default] section in config file.
+    Get data from FSM and also initialize missing values with default values
 
     :param state: current context
     """
-    changes = {}
-    user_data = await state.get_data()
+    data = await state.get_data()
+    has_changes = False
     for item in [a.value for a in DBKeys]:
-        if item not in user_data or user_data.get(item) is None:
-            changes[item] = app_config.default.__getattribute__(item)
-    if len(changes.keys()) > 0:
-        await state.update_data(**changes)
+        if item not in data or data.get(item) is None:
+            data[item] = app_config.__getattribute__(item)
+            has_changes = True
+    if has_changes:
+        await state.update_data(**data)
+    return data
 
 
 async def change_word_count(state: FSMContext, increase):
@@ -25,12 +26,12 @@ async def change_word_count(state: FSMContext, increase):
     :param state: current context
     :param increase: boolean flag whether word count needs to be increased or not ( = decreased )
     """
-    async with state.proxy() as data:
-        current_value = data.get(DBKeys.WORDS_COUNT.value)
-        if increase and (current_value+1) <= app_config.pwd_words.max:
-            await state.update_data({DBKeys.WORDS_COUNT.value: current_value+1})
-        elif not increase and (current_value-1) >= app_config.pwd_words.min:
-            await state.update_data({DBKeys.WORDS_COUNT.value: current_value-1})
+    data = await get_data(state)
+    current_value = data.get(DBKeys.WORDS_COUNT.value)
+    if increase and (current_value+1) <= app_config.max_words:
+        await state.update_data({DBKeys.WORDS_COUNT.value: current_value+1})
+    elif not increase and (current_value-1) >= app_config.min_words:
+        await state.update_data({DBKeys.WORDS_COUNT.value: current_value-1})
 
 
 async def toggle_feature(state: FSMContext, feature_name: str, new_state: bool):
