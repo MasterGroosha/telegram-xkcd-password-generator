@@ -1,4 +1,4 @@
-from other.config import load_config
+from other.config import load_configs
 from pathlib import Path
 import logging
 
