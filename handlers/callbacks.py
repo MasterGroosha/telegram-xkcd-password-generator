@@ -1,4 +1,5 @@
 from typing import Dict
+from contextlib import suppress
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.utils.exceptions import MessageNotModified
@@ -28,10 +29,8 @@ async def change_wordcount(call: types.CallbackQuery, callback_data: Dict[str, s
     keyboard = await kb.make_settings_keyboard_for_user_async(state, call.from_user.language_code)
     user_data = await state.get_data()
     user_lang = texts.get_language(call.from_user.language_code)
-    try:
+    with suppress(MessageNotModified):
         await call.message.edit_text(text=texts.get_settings_string(user_data, user_lang), reply_markup=keyboard)
-    except MessageNotModified:
-        pass
     await call.answer()
 
 
@@ -47,10 +46,8 @@ async def toggle_prefixes(call: types.CallbackQuery, callback_data: Dict[str, st
     keyboard = await kb.make_settings_keyboard_for_user_async(state, call.from_user.language_code)
     user_data = await state.get_data()
     user_lang = texts.get_language(call.from_user.language_code)
-    try:
+    with suppress(MessageNotModified):
         await call.message.edit_text(text=texts.get_settings_string(user_data, user_lang), reply_markup=keyboard)
-    except MessageNotModified:
-        pass
     await call.answer()
 
 
@@ -66,8 +63,6 @@ async def toggle_separators(call: types.CallbackQuery, callback_data: Dict[str, 
     keyboard = await kb.make_settings_keyboard_for_user_async(state, call.from_user.language_code)
     user_data = await state.get_data()
     user_lang = texts.get_language(call.from_user.language_code)
-    try:
+    with suppress(MessageNotModified):
         await call.message.edit_text(text=texts.get_settings_string(user_data, user_lang), reply_markup=keyboard)
-    except MessageNotModified:
-        pass
     await call.answer()
