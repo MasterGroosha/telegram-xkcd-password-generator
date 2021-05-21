@@ -1,10 +1,11 @@
 from aiogram import types, Dispatcher
 from aiogram.utils.markdown import hcode
 from bot.localization import get_string
+from bot.pwdgen import XKCD
 
 
 async def inline_handler(query: types.InlineQuery):
-    pwd = query.bot.get("pwd")
+    pwd: XKCD = query.bot.get("pwd")
     data = [
         {
             "title_tag": "inline_strong_title",

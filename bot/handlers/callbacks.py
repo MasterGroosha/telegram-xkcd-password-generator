@@ -8,6 +8,8 @@ from aiogram.utils.exceptions import MessageNotModified
 from bot.keyboards import make_regenerate_keyboard, make_settings_keyboard
 from bot.localization import get_settings_string
 from bot.common import cb_wordcount, cb_separators, cb_prefixes
+from bot.config_reader import Config
+from bot.pwdgen import XKCD
 
 
 async def regenerate_custom_password(call: types.CallbackQuery, state: FSMContext):
@@ -17,7 +19,7 @@ async def regenerate_custom_password(call: types.CallbackQuery, state: FSMContex
     :param call: Callback Query
     :param state: current user's state & data
     """
-    pwd = call.bot.get("pwd")
+    pwd: XKCD = call.bot.get("pwd")
     data = await state.get_data()
     new_password = pwd.custom(data.get("words_count"), data.get("separators"), data.get("prefixes_suffixes"))
     await call.message.edit_text(
@@ -33,7 +35,7 @@ async def update_settings_message(call: types.CallbackQuery, data: dict):
     :param call: Callback Query
     :param data: current user's state & data
     """
-    config = call.bot.get("config")
+    config: Config = call.bot.get("config")
     lang_code = call.from_user.language_code
     words_count = data.get("words_count")
     separators_enabled = data.get("separators")
@@ -68,7 +70,6 @@ async def change_words_count(call: types.CallbackQuery, callback_data: dict, sta
     :param callback_data: buttons data
     :param state: current user's state & data
     """
-    from bot.config_reader import Config
     config: Config = call.bot.get("config")
     data = await state.get_data()
     old_value = data.get("words_count", 3)

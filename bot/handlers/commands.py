@@ -4,11 +4,13 @@ from aiogram.utils.markdown import hcode
 
 from bot.localization import get_string, get_settings_string
 from bot.keyboards import make_settings_keyboard, make_regenerate_keyboard
+from bot.config_reader import Config
+from bot.pwdgen import XKCD
 
 
 async def cmd_start(message: types.Message, state: FSMContext):
     data = await state.get_data()
-    config = message.bot.get("config")
+    config: Config = message.bot.get("config")
 
     # Check whether user's settings exist and initialize if missing
     if data.get("words_count") is None:
@@ -26,22 +28,22 @@ async def cmd_help(message: types.Message):
 
 
 async def cmd_generate_weak(message: types.Message):
-    pwd = message.bot.get("pwd")
+    pwd: XKCD = message.bot.get("pwd")
     await message.answer(hcode(pwd.weak()))
 
 
 async def cmd_generate_normal(message: types.Message):
-    pwd = message.bot.get("pwd")
+    pwd: XKCD = message.bot.get("pwd")
     await message.answer(hcode(pwd.normal()))
 
 
 async def cmd_generate_strong(message: types.Message):
-    pwd = message.bot.get("pwd")
+    pwd: XKCD = message.bot.get("pwd")
     await message.answer(hcode(pwd.strong()))
 
 
 async def cmd_generate_custom(message: types.Message, state: FSMContext):
-    pwd = message.bot.get("pwd")
+    pwd: XKCD = message.bot.get("pwd")
     data = await state.get_data()
     custom_pwd = pwd.custom(data.get("words_count"), data.get("separators"), data.get("prefixes_suffixes"))
     await message.answer(
@@ -52,13 +54,13 @@ async def cmd_generate_custom(message: types.Message, state: FSMContext):
 
 async def default(message: types.Message):
     # same as cmd_generate_normal()
-    pwd = message.bot.get("pwd")
+    pwd: XKCD = message.bot.get("pwd")
     await message.answer(hcode(pwd.normal()))
 
 
 async def cmd_settings(message: types.Message, state: FSMContext):
     data = await state.get_data()
-    config = message.bot.get("config")
+    config: Config = message.bot.get("config")
     lang_code = message.from_user.language_code
     kb = make_settings_keyboard(
         config=config,
