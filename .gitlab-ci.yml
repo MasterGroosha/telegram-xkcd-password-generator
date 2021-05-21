@@ -16,7 +16,7 @@ stages:
   - build
 
 
-build-latest:
+bot:latest:
   stage: build
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
@@ -27,11 +27,13 @@ build-latest:
       docker push "$CI_REGISTRY_IMAGE:latest"
 
 
-build-tagged:
+bot:tagged:
   stage: build
   rules:
     - if: '$CI_COMMIT_TAG =~ /^v([0-9.]+)$/'
+      when: on_success
   script:
     - |
       docker build --pull -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG" .
       docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG"
+

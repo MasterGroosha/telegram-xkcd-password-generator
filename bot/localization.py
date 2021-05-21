@@ -1,19 +1,53 @@
 from collections import defaultdict
-from typing import Dict
 
 
-def get_settings_string(user_data: Dict, user_language: str) -> str:
-    toggles = ["no", "yes"]  # Choose from "no" or "yes" key depending on False/True values
-    return all_strings.get(user_language, "en")["settings"].format(
-        num_of_words=user_data["words_count"],
-        prefixes=all_strings[user_language][toggles[bool(user_data["prefixes_suffixes"])]],
-        separators=all_strings[user_language][toggles[bool(user_data["separators"])]]
+def get_language(lang_code) -> str:
+    """
+    Returns language code from {langs} dict or "en" as fallback value
+
+    :param lang_code: language code taken from Message object
+    :return: language code from {langs} dict or "en" as fallback value
+    """
+    langs = defaultdict(lambda: "en", {"ru": "ru"})
+    return langs[lang_code.split("-")[0]] if lang_code else "en"
+
+
+def get_string(lang_code: str, string_id: str) -> str:
+    """
+    Returns string from {all_strings} dictionary based on user's language code
+
+    :param lang_code: language code taken from Message object
+    :param string_id: ID of string to return
+    :return: requested string by lang_code and ID
+    """
+    lang = get_language(lang_code)
+    try:
+        return all_strings[lang][string_id]
+    except KeyError:
+        # TODO: log this error
+        return "ERR_NO_STRING"
+
+
+def get_settings_string(lang_code: str, words_count: int, separators_enabled: bool, prefixes_enabled: bool) -> str:
+    """
+    Returns text of user's current settings
+
+    :param lang_code: language code taken from Message object
+    :param words_count: number of words in custom password
+    :param separators_enabled: whether separators between words are enabled
+    :param prefixes_enabled: whether password should be enclosed in one extra delimiter
+    :return: text of user's current settings
+    """
+    toggles = ["no", "yes"]  # Choose between "no" and "yes" key depending on False/True values
+    lang = get_language(lang_code)
+    separators_string = get_string(lang, toggles[separators_enabled])
+    prefixes_string = get_string(lang, toggles[prefixes_enabled])
+    return get_string(lang, "settings").format(
+        num_of_words=words_count,
+        prefixes=prefixes_string,
+        separators=separators_string
     )
 
-
-def get_language(lang_code):
-    langs = defaultdict(lambda: 'en', {'ru': 'ru'})
-    return langs[lang_code.split("-")[0]] if lang_code else 'en'
 
 
 en_text_help = """<a href="http://imgs.xkcd.com/comics/password_strength.png">&#8203;</a>\
@@ -25,13 +59,12 @@ Choose from one of presets or customize passwords with /settings command and the
 You can also use this bot in <a href="https://core.telegram.org/bots/inline">inline mode</a>.
 
 <b>Available presets</b>:
-/generate_weak – 2 words, no digits
+/generate_weak – 2 words, no digits or separators
 /generate_normal – 3 words, random UPPERCASE, separated by numbers
-/generate_strong – 4 words, random UPPERCASE, no separators
-/generate_insane – 3 words, prefixes, suffixes, separators, random UPPERCASE
+/generate_strong – 4 words, random UPPERCASE, separated by numbers or special characters
 
 By the way, check out bot's source code: \
-<a href="https://git.groosha.space/groosha/passgenbot">GitLab</a> or 
+<a href="https://git.groosha.space/shared/passgenbot">GitLab</a> or 
 <a href="https://github.com/MasterGroosha/telegram-xkcd-password-generator">GitHub</a> (mirror)."""
 
 en_text_start = """<a href="http://imgs.xkcd.com/comics/password_strength.png">&#8203;</a>\
@@ -45,7 +78,7 @@ en_text_settings_choose = """Here are your current settings:
 <b>Number of words</b>: {num_of_words!s}
 <b>Extra prefixes/suffixes</b>: {prefixes}
 <b>Separators between words</b>: {separators}
-    
+
 You can edit these settings using buttons below.
 After you're satisfied with results, use /generate command"""
 
@@ -61,11 +94,10 @@ ru_text_help = """<a href="http://imgs.xkcd.com/comics/password_strength.png">&#
 <b>Доступные шаблоны</b>:
 /generate_weak – 2 слова строчными буквами, без разделителей
 /generate_normal – 3 слова, случайных выбор ПРОПИСНЫХ слов, случайные цифры в качестве разделителей
-/generate_strong – 4 слова, случайных выбор ПРОПИСНЫХ слов, без разделителей
-/generate_insane – 3 слова, случайных выбор ПРОПИСНЫХ слов, есть разделители, префиксы и суффиксы
+/generate_strong – 4 слова, случайных выбор ПРОПИСНЫХ слов, цифры и спецсимволы в качестве разделителей
 
 Исходные тексты бота доступны по ссылке: \
-<a href="https://git.groosha.space/groosha/passgenbot">GitLab</a> или 
+<a href="https://git.groosha.space/shared/passgenbot">GitLab</a> или 
 <a href="https://github.com/MasterGroosha/telegram-xkcd-password-generator">GitHub</a> (зеркало)."""
 
 ru_text_start = """<a href="http://imgs.xkcd.com/comics/password_strength.png">&#8203;</a>\
@@ -96,7 +128,13 @@ all_strings = {
         "minussep": "Remove separators",
         "regenerate": "🔄 Regenerate",
         "no": "No",
-        "yes": "Yes"
+        "yes": "Yes",
+        "inline_weak_title": "Weak password",
+        "inline_weak_description": "2 words, no digits or separators",
+        "inline_normal_title": "Normal password",
+        "inline_normal_description": "3 words, random UPPERCASE, separated by numbers",
+        "inline_strong_title": "Strong password",
+        "inline_strong_description": "4 words, random UPPERCASE, separated by numbers or special characters"
     },
     "ru": {
         "start": ru_text_start,
@@ -110,6 +148,12 @@ all_strings = {
         "minussep": "Убрать разделители",
         "regenerate": "🔄 Новый пароль",
         "no": "Нет",
-        "yes": "Да"
+        "yes": "Да",
+        "inline_weak_title": "Слабый пароль",
+        "inline_weak_description": "2 слова строчными буквами, без разделителей",
+        "inline_normal_title": "Средний пароль",
+        "inline_normal_description": "3 слова, случайных выбор ПРОПИСНЫХ слов, случайные цифры в качестве разделителей",
+        "inline_strong_title": "Надёжный пароль",
+        "inline_strong_description": "4 слова, случайных выбор ПРОПИСНЫХ слов, цифры и спецсимволы в качестве разделителей"
     }
 }

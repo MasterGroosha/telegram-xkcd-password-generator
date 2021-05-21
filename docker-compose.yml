@@ -1,24 +1,14 @@
 version: "3.8"
 services:
     bot:
-        # I don't provide ready-to-use images for now, sorry
-        build:
-            context: .
-            dockerfile: Dockerfile
-        image: telegram-passgen-bot:latest
+        image: registry.groosha.space/shared/passgenbot:latest
         restart: always
-        environment:
-            - BOT_TOKEN=123456:AaBbCcDdEeFfGgHh
         depends_on:
             - redis
         volumes:
             - "bot-config:/app/config"
-
     redis:
-        # You may want to use the official Redis image with data persistency configured
-        image: registry.groosha.space/groosha/redis-with-config:v6.0-alpine
-        container_name: "xkcd-password-generator-bot-redis"
-        hostname: redis
+        image: redis:6.0-alpine
         volumes:
             - "redis-config:/usr/local/etc/redis"
             - "redis-data:/data"
