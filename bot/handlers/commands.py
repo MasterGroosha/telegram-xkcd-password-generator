@@ -43,7 +43,7 @@ async def cmd_generate_strong(message: types.Message):
 async def cmd_generate_custom(message: types.Message, state: FSMContext):
     pwd = message.bot.get("pwd")
     data = await state.get_data()
-    custom_pwd = pwd.custom(data.get("words_count"), data.get("separators"), data.get("prefixes"))
+    custom_pwd = pwd.custom(data.get("words_count"), data.get("separators"), data.get("prefixes_suffixes"))
     await message.answer(
         hcode(custom_pwd),
         reply_markup=make_regenerate_keyboard(message.from_user.language_code)
