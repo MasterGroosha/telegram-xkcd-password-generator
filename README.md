@@ -23,9 +23,9 @@ You can install all these requirements with `pip install -r requirements.txt` co
 ### Presets
  ![Presets](img/readme_presets.png)
 
-`/generate_weak` – 2 words, no digits or separators between words  
-`/generate_normal` – 3 words, random UPPERCASE, separated by numbers
-`/generate_strong` – 4 words, random UPPERCASE, separated by numbers or special characters  
+* `/generate_weak` – 2 words, no digits or separators between words
+* `/generate_normal` – 3 words, random UPPERCASE, separated by numbers
+* `/generate_strong` – 4 words, random UPPERCASE, separated by numbers or special characters
 
 ### Customized Passwords
 
