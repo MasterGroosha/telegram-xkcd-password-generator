@@ -26,6 +26,7 @@ async def regenerate_custom_password(call: types.CallbackQuery, state: FSMContex
         text=hcode(new_password),
         reply_markup=make_regenerate_keyboard(call.from_user.language_code)
     )
+    await call.answer()
 
 
 async def update_settings_message(call: types.CallbackQuery, data: dict):
