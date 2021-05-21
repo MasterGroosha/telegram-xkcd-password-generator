@@ -23,17 +23,17 @@ You can install all these requirements with `pip install -r requirements.txt` co
 ### Presets
  ![Presets](img/readme_presets.png)
 
-`/generate_weak` – 2 words, no separators between words  
-`/generate_normal` – 3 words, no separators between words, second word is CAPITALIZED  
-`/generate_strong` – 3 words, random CAPITALIZATION, random number as separator between words   
-`/generate_stronger` – Same as "strong", but using 4 words    
-`/generate_insane` – 4 words, second one CAPITALIZED, separators, prefixes and suffixes  
+`/generate_weak` – 2 words, no digits or separators between words  
+`/generate_normal` – 3 words, random UPPERCASE, separated by numbers
+`/generate_strong` – 4 words, random UPPERCASE, separated by numbers or special characters  
 
 ### Customized Passwords
 
 ![Customized Passwords](img/readme_settings.png)  
 
-With `/settings` command you can customize generated passwords. Currently supported settings are number of words (2 to 8), prefixes and suffices in the beginning and in the end of password and separators between words in password. Then just use `/generate` command to create password based on your settings.
+With `/settings` command you can customize generated passwords. Currently supported settings are number of words (2 to 8), 
+prefixes and suffices in the beginning and in the end of password and separators between words in password. 
+Then just use `/generate` command to create password based on your settings.
 
 ### Inline mode
 
@@ -49,8 +49,7 @@ mkdir -p /opt/passgenbot/{bot-config,redis-config,redis-data}
 touch /opt/passgenbot/bot-config/config.ini
 ```
 
-`bot-config` directory contains `config.ini` file. You can also put your own vocabulary for generating passwords here, 
-just don't forget to update `config.ini` file and restart your bot.  
+`bot-config` directory contains `config.ini` file.  
 `redis-config` directory contains custom config file for Redis. If you don't place anything here, the following config 
 will be used:  
 ```
@@ -59,10 +58,9 @@ save 600 1
 dbfilename redis_dump.rdb
 ```
 `redis-data` directory contains your database file. You can place your own one if migrating from other bot's instance. 
-Again, don't forget to update `redis.conf` file if you rename or move your database file. 
+Don't forget to update `redis.conf` file if you rename or move your database file. 
 
 
 Use [config.example.ini](https://github.com/MasterGroosha/telegram-xkcd-password-generator/blob/master/config/config.example.ini) as an example 
 for your own configuration file, then place [docker-compose.yml](https://github.com/MasterGroosha/telegram-xkcd-password-generator/blob/master/docker-compose.yml) file 
-next to other created directories, put your bot's token as `BOT_TOKEN` environment variable and finally start your bot 
-using `docker-compose up -d` command. Check logs using `docker-compose logs`.
+next to other created directories and start your bot using `docker-compose up -d` command. Check logs using `docker-compose logs`.
