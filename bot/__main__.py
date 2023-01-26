@@ -1,16 +1,15 @@
 import asyncio
 import logging
-from os.path import join
 
 from aiogram import Bot, Dispatcher
-from aiogram.types import BotCommand
 from aiogram.contrib.fsm_storage.redis import RedisStorage2
+from aiogram.types import BotCommand
 
-from bot.config_reader import load_config
-from bot.pwdgen import XKCD
-from bot.handlers.commands import register_commands
+from bot.config_reader import settings
 from bot.handlers.callbacks import register_callbacks
+from bot.handlers.commands import register_commands
 from bot.handlers.inline_mode import register_inline_mode
+from bot.pwdgen import XKCD
 
 
 async def set_commands(dp: Dispatcher):
@@ -47,12 +46,11 @@ def get_handled_updates_list(dp: Dispatcher) -> list:
 
 async def main():
     logging.basicConfig(level=logging.INFO)
-    config = load_config(join("config", "config.ini"))
-    xkcd = XKCD(config.words.wordfile)
-    bot = Bot(token=config.bot.token, parse_mode="HTML")
+    xkcd = XKCD(str(settings.words.wordfile))
+    bot = Bot(token=settings.bot_token.get_secret_value(), parse_mode="HTML")
     bot["pwd"] = xkcd
-    bot["config"] = config
-    dp = Dispatcher(bot, storage=RedisStorage2(host=config.redis.host))
+    bot["config"] = settings
+    dp = Dispatcher(bot, storage=RedisStorage2(host=settings.redis.host))
 
     # Register handlers
     register_commands(dp)

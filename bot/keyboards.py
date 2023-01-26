@@ -1,11 +1,12 @@
 from aiogram import types
-from bot.localization import get_string
-from bot.config_reader import Config
+
 from bot.common import cb_wordcount, cb_separators, cb_prefixes
+from bot.config_reader import Settings
+from bot.localization import get_string
 
 
 def make_settings_keyboard(
-        config: Config,
+        config: Settings,
         language: str,
         current_wordcount: int,
         separators_enabled: bool,

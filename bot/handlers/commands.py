@@ -2,23 +2,22 @@ from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
 from aiogram.utils.markdown import hcode
 
-from bot.localization import get_string, get_settings_string
+from bot.config_reader import settings
 from bot.keyboards import make_settings_keyboard, make_regenerate_keyboard
-from bot.config_reader import Config
+from bot.localization import get_string, get_settings_string
 from bot.pwdgen import XKCD
 
 
 async def cmd_start(message: types.Message, state: FSMContext):
     data = await state.get_data()
-    config: Config = message.bot.get("config")
 
     # Check whether user's settings exist and initialize if missing
     if data.get("words_count") is None:
-        await state.update_data(words_count=config.words.default)
+        await state.update_data(words_count=settings.words.default)
     if data.get("prefixes_suffixes") is None:
-        await state.update_data(prefixes_suffixes=config.words.pref_suf)
+        await state.update_data(prefixes_suffixes=settings.words.prefixes_suffixed_by_default)
     if data.get("separators") is None:
-        await state.update_data(separators=config.words.separators)
+        await state.update_data(separators=settings.words.prefixes_suffixed_by_default)
 
     await message.answer(get_string(message.from_user.language_code, "start"))
 
@@ -60,10 +59,9 @@ async def default(message: types.Message):
 
 async def cmd_settings(message: types.Message, state: FSMContext):
     data = await state.get_data()
-    config: Config = message.bot.get("config")
     lang_code = message.from_user.language_code
     kb = make_settings_keyboard(
-        config=config,
+        config=settings,
         language=lang_code,
         current_wordcount=data["words_count"],
         separators_enabled=data["separators"],
