@@ -6,7 +6,7 @@ class WordSettings(BaseModel):
     min: int = 2
     max: int = 8
     default: int = 3
-    prefixes_suffixed_by_default: bool = True
+    prefixes_suffixes_by_default: bool = True
     separators_by_default: bool = True
 
 

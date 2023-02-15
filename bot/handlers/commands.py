@@ -15,9 +15,9 @@ async def cmd_start(message: types.Message, state: FSMContext):
     if data.get("words_count") is None:
         await state.update_data(words_count=settings.words.default)
     if data.get("prefixes_suffixes") is None:
-        await state.update_data(prefixes_suffixes=settings.words.prefixes_suffixed_by_default)
+        await state.update_data(prefixes_suffixes=settings.words.prefixes_suffixes_by_default)
     if data.get("separators") is None:
-        await state.update_data(separators=settings.words.prefixes_suffixed_by_default)
+        await state.update_data(separators=settings.words.prefixes_suffixes_by_default)
 
     await message.answer(get_string(message.from_user.language_code, "start"))
 
