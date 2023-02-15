@@ -13,7 +13,7 @@ class WordSettings(BaseModel):
 
 
 class Redis(BaseModel):
-    host: str
+    host: Optional[str]
     port: int = 6379
     db_num: int = 0
 
