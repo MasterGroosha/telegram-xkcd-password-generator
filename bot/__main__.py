@@ -3,6 +3,7 @@ import logging
 
 from aiogram import Bot, Dispatcher
 from aiogram.contrib.fsm_storage.redis import RedisStorage2
+from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.types import BotCommand
 
 from bot.config_reader import settings
@@ -50,7 +51,17 @@ async def main():
     bot = Bot(token=settings.bot_token.get_secret_value(), parse_mode="HTML")
     bot["pwd"] = xkcd
     bot["config"] = settings
-    dp = Dispatcher(bot, storage=RedisStorage2(host=settings.redis.host))
+    # Choose FSM backend
+    if settings.storage_mode == "redis":
+        storage = RedisStorage2(
+            host=settings.redis.host,
+            port=settings.redis.port,
+            db=settings.redis.db_num
+            )
+    else:
+        storage = MemoryStorage()
+
+    dp = Dispatcher(bot, storage=storage)
 
     # Register handlers
     register_commands(dp)

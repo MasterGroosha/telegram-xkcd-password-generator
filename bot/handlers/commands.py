@@ -44,7 +44,11 @@ async def cmd_generate_strong(message: types.Message):
 async def cmd_generate_custom(message: types.Message, state: FSMContext):
     pwd: XKCD = message.bot.get("pwd")
     data = await state.get_data()
-    custom_pwd = pwd.custom(data.get("words_count"), data.get("separators"), data.get("prefixes_suffixes"))
+    custom_pwd = pwd.custom(
+        data.get("words_count", settings.words.default),
+        data.get("separators", settings.words.separators_by_default),
+        data.get("prefixes_suffixes", settings.words.prefixes_suffixes_by_default)
+    )
     await message.answer(
         hcode(custom_pwd),
         reply_markup=make_regenerate_keyboard(message.from_user.language_code)
@@ -60,18 +64,21 @@ async def default(message: types.Message):
 async def cmd_settings(message: types.Message, state: FSMContext):
     data = await state.get_data()
     lang_code = message.from_user.language_code
+    words_count = data.get("words_count", settings.words.default)
+    separators = data.get("separators", settings.words.separators_by_default)
+    prefixes = data.get("prefixes_suffixes", settings.words.prefixes_suffixes_by_default)
     kb = make_settings_keyboard(
         config=settings,
         language=lang_code,
-        current_wordcount=data["words_count"],
-        separators_enabled=data["separators"],
-        prefixes_enabled=data["prefixes_suffixes"]
+        current_wordcount=words_count,
+        separators_enabled=separators,
+        prefixes_enabled=prefixes
     )
     message_text = get_settings_string(
         lang_code=lang_code,
-        words_count=data["words_count"],
-        separators_enabled=data["separators"],
-        prefixes_enabled=data["prefixes_suffixes"]
+        words_count=words_count,
+        separators_enabled=separators,
+        prefixes_enabled=prefixes
     )
     await message.answer(message_text, reply_markup=kb)
 

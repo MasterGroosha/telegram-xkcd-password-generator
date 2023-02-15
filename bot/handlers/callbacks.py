@@ -21,7 +21,11 @@ async def regenerate_custom_password(call: types.CallbackQuery, state: FSMContex
     """
     pwd: XKCD = call.bot.get("pwd")
     data = await state.get_data()
-    new_password = pwd.custom(data.get("words_count"), data.get("separators"), data.get("prefixes_suffixes"))
+    new_password = pwd.custom(
+        data.get("words_count", settings.words.default),
+        data.get("separators", settings.words.separators_by_default),
+        data.get("prefixes_suffixes", settings.words.prefixes_suffixes_by_default)
+    )
     await call.message.edit_text(
         text=hcode(new_password),
         reply_markup=make_regenerate_keyboard(call.from_user.language_code)
@@ -37,9 +41,9 @@ async def update_settings_message(call: types.CallbackQuery, data: dict):
     :param data: current user's state & data
     """
     lang_code = call.from_user.language_code
-    words_count = data.get("words_count")
-    separators_enabled = data.get("separators")
-    prefixes_enabled = data.get("prefixes_suffixes")
+    words_count = data.get("words_count", settings.words.default)
+    separators_enabled = data.get("separators", settings.words.separators_by_default)
+    prefixes_enabled = data.get("prefixes_suffixes", settings.words.prefixes_suffixes_by_default)
     new_settings_text = get_settings_string(lang_code, words_count, separators_enabled, prefixes_enabled)
     new_keyboard = make_settings_keyboard(settings, lang_code, words_count, separators_enabled, prefixes_enabled)
 
