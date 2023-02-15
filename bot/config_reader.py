@@ -29,7 +29,7 @@ class Settings(BaseSettings):
         v = v.lower()
         if v not in {"memory", "redis"}:
             raise ValueError("Only 'memory' and 'redis' values are allowed.")
-        if v == "redis" and (not values.get("redis") or not values.get("redis", {}).get("host")):
+        if v == "redis" and (not values.get("redis") or not values.redis.host):
             raise ValueError("Backend mode 'redis' selected, but no host is provided; set it via REDIS__HOST variable.")
         return v
 
