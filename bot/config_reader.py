@@ -13,7 +13,7 @@ class WordSettings(BaseModel):
 
 
 class Redis(BaseModel):
-    host: str = "127.0.0.1"
+    host: str
     port: int = 6379
     db_num: int = 0
 
@@ -25,10 +25,12 @@ class Settings(BaseSettings):
     words: WordSettings
 
     @validator("storage_mode")
-    def validate_storage_mode(cls, v: str):
+    def validate_storage_mode(cls, v: str, values):
         v = v.lower()
         if v not in {"memory", "redis"}:
-            raise ValueError("Only 'memory' and 'redis' values are allowed")
+            raise ValueError("Only 'memory' and 'redis' values are allowed.")
+        if v == "redis" and (not values.get("redis") or not values.get("redis", {}).get("host")):
+            raise ValueError("Backend mode 'redis' selected, but no host is provided; set it via REDIS__HOST variable.")
         return v
 
     class Config:
