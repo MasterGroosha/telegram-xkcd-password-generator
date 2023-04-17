@@ -12,7 +12,7 @@ magic-filter==1.0.9
 multidict==6.0.4
 pydantic==1.10.4
 pytz==2022.7.1
-redis==4.4.2
+redis==4.4.4
 typing_extensions==4.4.0
 xkcdpass==1.19.3
 yarl==1.8.2
