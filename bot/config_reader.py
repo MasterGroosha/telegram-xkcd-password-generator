@@ -1,47 +1,40 @@
-from configparser import ConfigParser
-from dataclasses import dataclass
+from typing import Optional
+
+from pydantic import BaseModel, BaseSettings, SecretStr, FilePath, validator
 
 
-@dataclass
-class Bot:
-    token: str
+class WordSettings(BaseModel):
+    wordfile: FilePath
+    min: int = 2
+    max: int = 8
+    default: int = 3
+    prefixes_suffixes_by_default: bool = True
+    separators_by_default: bool = True
 
 
-@dataclass
-class Words:
-    wordfile: str
-    min: int
-    max: int
-    default: int
-    pref_suf: bool
-    separators: bool
+class Redis(BaseModel):
+    host: Optional[str]
+    port: int = 6379
+    db_num: int = 0
 
 
-@dataclass
-class Redis:
-    host: str
+class Settings(BaseSettings):
+    bot_token: SecretStr
+    redis: Optional[Redis]
+    storage_mode: str
+    words: WordSettings
+
+    @validator("storage_mode")
+    def validate_storage_mode(cls, v: str, values):
+        v = v.lower()
+        if v not in {"memory", "redis"}:
+            raise ValueError("Only 'memory' and 'redis' values are allowed.")
+        if v == "redis" and (not values.get("redis") or not values["redis"].host):
+            raise ValueError("Backend mode 'redis' selected, but no host is provided; set it via REDIS__HOST variable.")
+        return v
+
+    class Config:
+        env_nested_delimiter = '__'
 
 
-@dataclass
-class Config:
-    bot: Bot
-    words: Words
-    redis: Redis
-
-
-def load_config(path: str):
-    cfg = ConfigParser()
-    cfg.read(path)
-
-    return Config(
-        bot=Bot(token=cfg.get("bot", "token")),
-        words=Words(
-            wordfile=cfg.get("words", "wordfile"),
-            min=cfg.getint("words", "min"),
-            max=cfg.getint("words", "max"),
-            default=cfg.getint("words", "default"),
-            pref_suf=cfg.getboolean("words", "pref_suf"),
-            separators=cfg.getboolean("words", "separators")
-        ),
-        redis=Redis(host=cfg.get("redis", "host"))
-    )
+settings = Settings()
