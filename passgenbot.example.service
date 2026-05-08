@@ -1,15 +1,14 @@
 [Unit]
 Description=Telegram Password Generator Bot
-Requires=redis.service
-After=network.target redis.service
+After=network.target
 
 [Service]
 Type=simple
-WorkingDirectory=/home/user/telegram-passgen-bot
-ExecStart=/home/user/telegram-passgen-bot/venv/bin/python -m bot
-KillMode=process
-Restart=always
-RestartSec=10
+User=REPLACE_WITH_YOUR_USERNAME
+WorkingDirectory=/path/to/passgenbot
+ExecStart=/path/to/passgenbot/.venv/bin/python -m bot
+Restart=on-failure
+RestartSec=5
 
 [Install]
 WantedBy=multi-user.target

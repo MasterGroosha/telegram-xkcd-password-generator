@@ -9,58 +9,95 @@ Try it now: https://t.me/passgenbot
 * Inline mode with colored complexity;  
 * No personal data is collected!  
 * Basic multilanguage support (En+Ru), depending on `language_code` from Bot API;  
-* [Docker support](#docker)
 
 ### Requirements
-* Python 3.7+  
+* Python 3.14+  
 * [aiogram](https://github.com/aiogram/aiogram) – Telegram Bot API framework;  
-* [Redis](https://redis.io) as backend for aiogram's finite state machine (FSM);  
-* [XKCD-password-generator](https://github.com/redacted/XKCD-password-generator) – It goes without saying :)
+* [XKCD-password-generator](https://github.com/redacted/XKCD-password-generator) – the library behind XKCD-style password generation
+* uv
 
-You can install all these requirements with `pip install -r requirements.txt` command. Redis must be done separately 
-(or will be automatically pulled if using [Docker](#docker) method below)
+### Setup
 
-### Presets
- ![Presets](img/readme_presets.png)
+1. Clone the repository and enter the project directory.
+2. Copy `settings.example.toml` to `settings.toml` and fill in the values:
+   - `bot.token` — your Telegram bot token from [@BotFather](https://t.me/BotFather)
+   - `xkcd.wordfile` — absolute path to `words.txt` (included in the repo)
+3. Install dependencies: `uv sync`
 
-* `/generate_weak` – 2 words, no digits or separators between words
-* `/generate_normal` – 3 words, random UPPERCASE, separated by numbers
-* `/generate_strong` – 4 words, random UPPERCASE, separated by numbers or special characters
+### Running
 
-### Customized Passwords
+```bash
+uv run -m bot
+```
 
-![Customized Passwords](img/readme_settings.png)  
+### Running via systemd
 
-With `/settings` command you can customize generated passwords. Currently supported settings are number of words (2 to 8), 
-prefixes and suffices in the beginning and in the end of password and separators between words in password. 
-Then just use `/generate` command to create password based on your settings.
+For a persistent deployment on a Linux server, a sample unit file is provided at `passgenbot.example.service`.
+
+1. Copy and edit the file:
+
+```bash
+cp passgenbot.example.service /etc/systemd/system/passgenbot.service
+# Edit User=, WorkingDirectory=, and ExecStart= to match your setup
+nano /etc/systemd/system/passgenbot.service
+```
+
+2. After the first `uv sync`, the virtual environment is created at `.venv/`. Set `ExecStart` to:
+
+```
+ExecStart=/path/to/passgenbot/.venv/bin/python -m bot
+```
+
+3. Enable and start the service:
+
+```bash
+systemctl daemon-reload
+systemctl enable --now passgenbot
+```
+
+Check status with `systemctl status passgenbot` and logs with `journalctl -u passgenbot -f`.
+
+### Generating passwords
+
+Use `/generate` to create a password. The bot replies with the password and an inline keyboard that lets you adjust it on the fly:
+
+<img src="img/readme_generate.png" alt="Generation flow" width="560">
+
+* **− Word / + Word** — decrease or increase the number of words (2 to 5);
+* **Show/Hide delimiters** — toggle digit separators between words;
+* **Add/Remove edge** — add or remove a delimiter at the beginning and end of the password;
+* **Regenerate** — generate a new password with the same settings;
+* **Copy** — copy the password to clipboard (Telegram native button);
+* **Delete** — remove the message.
 
 ### Inline mode
 
-![Inline mode](img/readme_inline.png)
+<img src="img/readme_inline.png" alt="Inline mode" width="560">
 
 You can also use this bot in inline mode. An indicator on the left shows rough password complexity (green is good, red is not).
 
-### Docker
+## Running tests
 
-This bot supports deployment via docker-compose. First create a directory structure for your bot, e.g.:  
+The project uses [pytest](https://pytest.org) with [uv](https://github.com/astral-sh/uv) as the package manager.
+
 ```bash
-mkdir -p /opt/passgenbot/{bot-config,redis-config,redis-data}
-touch /opt/passgenbot/bot-config/config.ini
+uv run pytest tests/
 ```
 
-`bot-config` directory contains `config.ini` file.  
-`redis-config` directory contains custom config file for Redis. If you don't place anything here, the following config 
-will be used:  
-```
-port 6379
-save 600 1
-dbfilename redis_dump.rdb
-```
-`redis-data` directory contains your database file. You can place your own one if migrating from other bot's instance. 
-Don't forget to update `redis.conf` file if you rename or move your database file. 
+Add `-v` for verbose output:
 
+```bash
+uv run pytest tests/ -v
+```
 
-Use [config.example.ini](https://github.com/MasterGroosha/telegram-xkcd-password-generator/blob/master/config/config.example.ini) as an example 
-for your own configuration file, then place [docker-compose.yml](https://github.com/MasterGroosha/telegram-xkcd-password-generator/blob/master/docker-compose.yml) file 
-next to other created directories and start your bot using `docker-compose up -d` command. Check logs using `docker-compose logs`.
+## Note on versioning
+
+For most of my Telegram bots, I plan to use Calendar Versioning with the following rules:
+
+* Versions should look like `vAAAA.BB.C`, where:
+* * `vAAAA` is the letter "v" followed by the 4-digit year of release, e.g., `v2025`.
+* * `BB` is the 2-digit month number, e.g., `06` for June.
+* * `C` is the release number for that month, not zero-padded, e.g., 1 for the first release in June.
+For example, the first release to use the new versioning schema will be tagged as `v2025.06.1`.
+
+This scheme makes it easier to understand which Bot API features might be supported in a given release and which are definitely not.
