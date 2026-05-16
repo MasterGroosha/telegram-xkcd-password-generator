@@ -23,7 +23,7 @@ _THUMB_BASE = (
 def build_inline_message_text(password: str, user_text: str) -> str:
     text = f"<code>{html.escape(password)}</code>"
     if user_text:
-        text += f"\n{html.escape(user_text)}"
+        text += f"\n\n{html.escape(user_text)}"
     return text
 
 
