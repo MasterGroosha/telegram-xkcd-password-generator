@@ -1,49 +1,76 @@
-from aiogram import types, Dispatcher
-from aiogram.utils.markdown import hcode
-from bot.localization import get_string
-from bot.pwdgen import XKCD
+import html
+
+from aiogram import Router
+from aiogram.enums import ParseMode
+from aiogram.types import (
+    InlineQuery,
+    InlineQueryResultArticle,
+    InputTextMessageContent,
+)
+
+from bot.i18n import resolve_locale, t
+from bot.metrics import emit_metric
+from bot.pwdgen import XKCDGenerator
+
+router = Router(name="inline_mode")
+
+_THUMB_BASE = (
+    "https://raw.githubusercontent.com/MasterGroosha/"
+    "telegram-xkcd-password-generator/master/img/pwd_{color}.png"
+)
 
 
-async def inline_handler(query: types.InlineQuery):
-    pwd: XKCD = query.bot.get("pwd")
+def build_inline_message_text(password: str, user_text: str) -> str:
+    text = f"<code>{html.escape(password)}</code>"
+    if user_text:
+        text += f"\n\n{html.escape(user_text)}"
+    return text
+
+
+@router.inline_query()
+async def inline_handler(query: InlineQuery, xkcdgen: XKCDGenerator) -> None:
+    locale = resolve_locale(query.from_user.language_code if query.from_user else None)
+    user_text = query.query.strip()
+    if not user_text:
+        await emit_metric("inline.open")
+
     data = [
         {
-            "title_tag": "inline_strong_title",
-            "description_tag": "inline_strong_description",
-            "password_func": pwd.strong,
-            "thumb_color": "green"
+            "title_key": "inline-strong-title",
+            "description_key": "inline-strong-description",
+            "password_func": xkcdgen.strong,
+            "thumb_color": "green",
         },
         {
-            "title_tag": "inline_normal_title",
-            "description_tag": "inline_normal_description",
-            "password_func": pwd.normal,
-            "thumb_color": "yellow"
+            "title_key": "inline-normal-title",
+            "description_key": "inline-normal-description",
+            "password_func": xkcdgen.normal,
+            "thumb_color": "yellow",
         },
         {
-            "title_tag": "inline_weak_title",
-            "description_tag": "inline_weak_description",
-            "password_func": pwd.weak,
-            "thumb_color": "red"
+            "title_key": "inline-weak-title",
+            "description_key": "inline-weak-description",
+            "password_func": xkcdgen.weak,
+            "thumb_color": "red",
         },
     ]
+
     results = []
     for index, item in enumerate(data):
+        password = item["password_func"]()
         results.append(
-            types.InlineQueryResultArticle(
+            InlineQueryResultArticle(
                 id=str(index),
-                title=get_string(query.from_user.language_code, item["title_tag"]),
-                description=get_string(query.from_user.language_code, item["description_tag"]),
-                input_message_content=types.InputTextMessageContent(
-                    message_text=hcode(item["password_func"]())
+                title=t(item["title_key"], locale=locale),
+                description=t(item["description_key"], locale=locale),
+                input_message_content=InputTextMessageContent(
+                    message_text=build_inline_message_text(password, user_text),
+                    parse_mode=ParseMode.HTML,
                 ),
-                thumb_url=f"https://raw.githubusercontent.com/MasterGroosha/"
-                          f"telegram-xkcd-password-generator/master/img/pwd_{item['thumb_color']}.png",
-                thumb_height=64,
-                thumb_width=64,
+                thumbnail_url=_THUMB_BASE.format(color=item["thumb_color"]),
+                thumbnail_height=64,
+                thumbnail_width=64,
             )
         )
+
     await query.answer(results, cache_time=1, is_personal=True)
-
-
-def register_inline_mode(dp: Dispatcher):
-    dp.register_inline_handler(inline_handler)
