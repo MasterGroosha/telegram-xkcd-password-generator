@@ -1,6 +1,4 @@
-import pytest
-
-from bot.handlers.inline_mode import build_inline_message_text
+from bot.handlers.inline_mode import build_inline_description, build_inline_message_text
 
 
 def test_no_user_text_returns_code_only():
@@ -10,7 +8,7 @@ def test_no_user_text_returns_code_only():
 
 def test_with_user_text_appends_after_newline():
     result = build_inline_message_text("mypassword", "hello world")
-    assert result == "<code>mypassword</code>\nhello world"
+    assert result == "<code>mypassword</code>\n\nhello world"
 
 
 def test_password_with_html_special_chars_is_escaped():
@@ -40,3 +38,13 @@ def test_parse_mode_is_html_compatible():
     assert result.startswith("<code>")
     assert result.endswith("</info>") is False  # raw tag must not appear
     assert "<info>" not in result
+
+
+def test_empty_user_text_uses_localized_description():
+    result = build_inline_description("inline-weak-description", "", "en")
+    assert result == "2 words, no digits or separators"
+
+
+def test_user_text_is_used_as_description():
+    result = build_inline_description("inline-weak-description", "my query", "en")
+    assert result == "my query"

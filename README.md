@@ -72,7 +72,11 @@ Use `/generate` to create a password. The bot replies with the password and an i
 
 ### Inline mode
 
-<img src="img/readme_inline.png" alt="Inline mode" width="560">
+<img src="img/readme_inline_empty.png" alt="Inline mode with empty query" width="560">
+
+When the query is empty, descriptions show preset details; when it is not, the query itself is shown as the description.
+
+<img src="img/readme_inline_description.png" alt="Inline mode with description" width="560">
 
 You can also use this bot in inline mode. An indicator on the left shows rough password complexity (green is good, red is not).
 
@@ -90,14 +94,15 @@ Add `-v` for verbose output:
 uv run pytest tests/ -v
 ```
 
-## Note on versioning
+## Versioning
 
-For most of my Telegram bots, I plan to use Calendar Versioning with the following rules:
+This project uses Calendar Versioning with the following rules:
 
 * Versions should look like `vAAAA.BB.C`, where:
-* * `vAAAA` is the letter "v" followed by the 4-digit year of release, e.g., `v2025`.
-* * `BB` is the 2-digit month number, e.g., `06` for June.
-* * `C` is the release number for that month, not zero-padded, e.g., 1 for the first release in June.
-For example, the first release to use the new versioning schema will be tagged as `v2025.06.1`.
+  * `vAAAA` is the letter "v" followed by the 4-digit year of release, e.g., `v2026`.
+  * `BB` is the 2-digit month number, e.g., `05` for May.
+  * `C` is the release number for that month, not zero-padded, e.g., 1 for the first release in May.
+
+For example, the first release to use the new versioning schema is `v2026.05.1`.
 
 This scheme makes it easier to understand which Bot API features might be supported in a given release and which are definitely not.
