@@ -1,9 +1,10 @@
-from aiogram import F, Router
+from aiogram import Router
 
 from . import (
-    start,
+    errors,
     generate,
     inline_mode,
+    start,
 )
 
 
@@ -12,5 +13,5 @@ def get_routers() -> list[Router]:
         start.router,
         generate.router,
         inline_mode.router,
+        errors.router,
     ]
-
